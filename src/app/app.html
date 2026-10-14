@@ -1,0 +1,19 @@
+<nav class="fixed z-998 bg-black/50 backdrop-blur-sm top-0 left-0 w-full flex items-center justify-between px-4 h-20 border-b-2 border-[#fefefe]">
+  <span class="flex items-center justify-center px-4 py-2 font-bold text-3xl">
+    <a routerLink="/">PMP</a>
+  </span>
+
+  <div class="flex items-center justify-around gap-5 p-4 text-sm tracking-tight">
+    <a routerLink="" class="hover:underline underline-offset-2">Projects</a>
+    <a routerLink="" class="hover:underline underline-offset-2">Allocation</a>
+    <a routerLink="" class="hover:underline underline-offset-2">Reports</a>
+  </div>
+</nav>
+
+<main class="flex flex-col w-full min-h-screen mt-20 overflow-x-hidden">
+  <router-outlet />
+</main>
+
+<footer>
+
+</footer>

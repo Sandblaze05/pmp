@@ -1,0 +1,183 @@
+<div class="mx-4 mt-6 flex flex-col sm:mx-6 sm:mt-10 lg:mx-10">
+    <div class="flex h-auto flex-col gap-4 border-b-3 border-[#fefefe] pb-4 pt-2 sm:flex-row sm:items-center sm:justify-between sm:pb-7">
+        <div class="flex sm:flex-row flex-col flex-wrap items-center gap-2 sm:gap-3">
+            <span
+                class="text-2xl font-bold tracking-wide border-r-2 border-[#fefefe] pr-4 font-mono flex items-center gap-2">
+                <svg lucideList></svg> List
+            </span>
+
+            <button type="button" (click)="selectedStatus.set(0)"
+                [style.background-color]="selectedStatus() === 0 ? '#fefefe' : null"
+                [style.color]="selectedStatus() === 0 ? '#171717' : null"
+                class="rounded-full px-2 py-1 text-sm font-semibold">
+                In Progress: {{ inProgress() }}
+            </button>
+            <button type="button" (click)="selectedStatus.set(1)"
+                [style.background-color]="selectedStatus() === 1 ? '#fefefe' : null"
+                [style.color]="selectedStatus() === 1 ? '#171717' : null"
+                class="rounded-full px-2 py-1 text-sm font-semibold">
+                New Projects: {{ newProjects() }}
+            </button>
+            <button type="button" (click)="selectedStatus.set(3)"
+                [style.background-color]="selectedStatus() === 3 ? '#fefefe' : null"
+                [style.color]="selectedStatus() === 3 ? '#171717' : null"
+                class="rounded-full px-2 py-1 text-sm font-semibold">
+                Completed: {{ completed() }}
+            </button>
+
+        </div>
+
+        <div id="action" class="self-center sm:self-auto">
+            <button type="button" (click)="openCreateModal()"
+                class="inline-flex cursor-pointer items-center gap-2 whitespace-nowrap px-2 py-1 hover:bg-[#fefefe] hover:text-[#171717] transition-colors rounded-full border border-[#fefefe]">
+                <span class="sm:flex hidden">Create</span> <svg lucidePlus></svg>
+            </button>
+        </div>
+
+
+    </div>
+</div>
+
+<div class="mx-4 mt-6 max-w-[calc(100vw-2rem)] overflow-x-auto rounded-lg border border-[#fefefe]/20 sm:mx-6 sm:mt-8 sm:max-w-[calc(100vw-3rem)] lg:mx-10 lg:max-w-[calc(100vw-5rem)]">
+    <table class="min-w-375 w-full border-collapse text-left text-sm">
+        <thead class="bg-[#fefefe]/10">
+            <tr>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Project Code</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Customer Name</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Project Name</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Project Start Date</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Project End Date</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Revised End Date</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Renewal Date</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Project Issue Date</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Estimated Hours</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Actual Hours</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Onshore Manager</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Offshore Manager</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Account Manager</th>
+                <th class="border-r border-[#fefefe]/20 px-3 py-3">Status</th>
+                <th class="px-3 py-3">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (project of filteredProjects(); track project.projectId) {
+            <tr class="border-t border-[#fefefe]/20">
+                <td class="border-r border-[#fefefe]/20 px-3 py-3 font-mono">{{ project.projectId }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.custName }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectName }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectStartDate }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectEndDate }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.revisedEndDate || '-' }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.renewalDate || '-' }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectIssueDate }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.estimatedHours }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.actualHours ?? '-' }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.onshoreManagerName }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.offshoreManagerName }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.accountManagerName }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">
+                    {{ project.status === 1 ? 'Pending approval' : project.status === 0 ? 'In progress' : 'Completed' }}
+                </td>
+                <td class="px-3 py-3">
+                    @if (project.status === 1) {
+                    <button type="button" class="mb-2 block whitespace-nowrap rounded border border-[#fefefe]/50 px-3 py-1 hover:bg-[#fefefe] hover:text-[#171717]" (click)="changeProjectStatus(project.projectId, 0)">
+                        Start progress
+                    </button>
+                    } @else if (project.status === 0) {
+                    <button type="button" class="mb-2 block whitespace-nowrap rounded border border-[#fefefe]/50 px-3 py-1 hover:bg-[#fefefe] hover:text-[#171717]" (click)="changeProjectStatus(project.projectId, 3)">
+                        Mark completed
+                    </button>
+                    }
+                    <button type="button" class="whitespace-nowrap rounded border border-[#fefefe]/50 px-3 py-1 hover:bg-[#fefefe] hover:text-[#171717]" (click)="editProject(project)">
+                        Edit details
+                    </button>
+                </td>
+            </tr>
+            } @empty {
+            <tr>
+                <td colspan="16" class="px-3 py-8 text-center text-[#fefefe]/60">No projects in this status.</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@if (isCreateModalOpen()) {
+<div (click)="isCreateModalOpen.set(false)" class="fixed inset-0 z-999 flex items-center justify-center bg-[#fefefe]/20 p-4 backdrop-blur-sm">
+    <div class="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-[#171717] p-4 text-[#fefefe] sm:p-6" (click)="$event.stopPropagation()">
+        <div class="flex items-center justify-between">
+            <h2 class="text-xl font-bold">{{ editingProjectId() ? 'Edit Project' : 'Create Project' }}</h2>
+
+            <button class="w-5 h-5 cursor-pointer" type="button" aria-label="Close modal" (click)="isCreateModalOpen.set(false)">
+                <svg lucideX></svg>
+            </button>
+        </div>
+
+        <form #projectForm="ngForm" (ngSubmit)="saveProject()" class="mt-6 grid gap-4 md:grid-cols-2">
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Customer name</span>
+                <input required type="text" name="customerName" [(ngModel)]="draftProject.custName" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Project name</span>
+                <input required type="text" name="projectName" [(ngModel)]="draftProject.projectName" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Project start date</span>
+                <input required type="date" name="projectStartDate" [(ngModel)]="draftProject.projectStartDate" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">End date</span>
+                <input required type="date" name="endDate" [(ngModel)]="draftProject.projectEndDate" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Issue date</span>
+                <input required type="date" name="issueDate" [(ngModel)]="draftProject.projectIssueDate" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Estimated hours</span>
+                <input required type="number" name="estimatedHours" [(ngModel)]="draftProject.estimatedHours" min="0" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Revised end date</span>
+                <input type="date" name="revisedEndDate" [(ngModel)]="draftProject.revisedEndDate" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Renewal date</span>
+                <input type="date" name="renewalDate" [(ngModel)]="draftProject.renewalDate" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Actual hours</span>
+                <input type="number" name="actualHours" [(ngModel)]="draftProject.actualHours" min="0" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Onshore manager</span>
+                <input required type="text" name="onshoreManager" [(ngModel)]="draftProject.onshoreManagerName" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Offshore manager</span>
+                <input required type="text" name="offshoreManager" [(ngModel)]="draftProject.offshoreManagerName" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <label class="flex flex-col gap-1">
+                <span class="text-sm font-semibold">Account manager</span>
+                <input required type="text" name="accountManager" [(ngModel)]="draftProject.accountManagerName" class="rounded border border-[#fefefe]/30 bg-transparent p-2" />
+            </label>
+
+            <button type="submit" class="rounded-full hover:bg-[#fefefe] hover:text-[#171717] transition-colors cursor-pointer border border-[#fefefe] px-4 py-2 md:col-span-2">
+                {{ editingProjectId() ? 'Save changes' : 'Create' }}
+            </button>
+        </form>
+    </div>
+</div>
+}
