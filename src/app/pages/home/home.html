@@ -6,22 +6,22 @@
                 <svg lucideList></svg> List
             </span>
 
-            <button type="button" (click)="selectedStatus.set(0)"
+            <button type="button" (click)="selectStatus(0)"
                 [style.background-color]="selectedStatus() === 0 ? '#fefefe' : null"
                 [style.color]="selectedStatus() === 0 ? '#171717' : null"
-                class="rounded-full px-2 py-1 text-sm font-semibold">
+                class="rounded-full px-2 py-1 text-sm font-semibold cursor-pointer">
                 In Progress: {{ inProgress() }}
             </button>
-            <button type="button" (click)="selectedStatus.set(1)"
+            <button type="button" (click)="selectStatus(1)"
                 [style.background-color]="selectedStatus() === 1 ? '#fefefe' : null"
                 [style.color]="selectedStatus() === 1 ? '#171717' : null"
-                class="rounded-full px-2 py-1 text-sm font-semibold">
+                class="rounded-full px-2 py-1 text-sm font-semibold cursor-pointer">
                 New Projects: {{ newProjects() }}
             </button>
-            <button type="button" (click)="selectedStatus.set(3)"
+            <button type="button" (click)="selectStatus(3)"
                 [style.background-color]="selectedStatus() === 3 ? '#fefefe' : null"
                 [style.color]="selectedStatus() === 3 ? '#171717' : null"
-                class="rounded-full px-2 py-1 text-sm font-semibold">
+                class="rounded-full px-2 py-1 text-sm font-semibold cursor-pointer">
                 Completed: {{ completed() }}
             </button>
 
@@ -60,16 +60,16 @@
             </tr>
         </thead>
         <tbody>
-            @for (project of filteredProjects(); track project.projectId) {
+            @for (project of pagedProjects(); track project.projectId) {
             <tr class="border-t border-[#fefefe]/20">
                 <td class="border-r border-[#fefefe]/20 px-3 py-3 font-mono">{{ project.projectId }}</td>
                 <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.custName }}</td>
                 <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectName }}</td>
-                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectStartDate }}</td>
-                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectEndDate }}</td>
-                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.revisedEndDate || '-' }}</td>
-                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.renewalDate || '-' }}</td>
-                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectIssueDate }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectStartDate | date:'dd-MM-yyyy' }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectEndDate | date:'dd-MM-yyyy' }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ (project.revisedEndDate | date:'dd-MM-yyyy') || '-' }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ (project.renewalDate | date:'dd-MM-yyyy') || '-' }}</td>
+                <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.projectIssueDate | date:'dd-MM-yyyy' }}</td>
                 <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.estimatedHours }}</td>
                 <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.actualHours ?? '-' }}</td>
                 <td class="border-r border-[#fefefe]/20 px-3 py-3">{{ project.onshoreManagerName }}</td>
@@ -101,6 +101,18 @@
         </tbody>
     </table>
 </div>
+
+<nav aria-label="Project list pages" class="mx-4 mt-4 flex items-center justify-center gap-4 sm:mx-6 lg:mx-10">
+    <button type="button" (click)="previousPage()" [disabled]="displayedPage() === 1"
+        class="rounded-full border border-[#fefefe]/50 px-3 py-1 hover:bg-[#fefefe] hover:text-[#171717] disabled:cursor-not-allowed disabled:opacity-40">
+        <svg lucideChevronLeft></svg>
+    </button>
+    <span aria-live="polite">Page {{ displayedPage() }} of {{ totalPages() }}</span>
+    <button type="button" (click)="nextPage()" [disabled]="displayedPage() === totalPages()"
+        class="rounded-full border border-[#fefefe]/50 px-3 py-1 hover:bg-[#fefefe] hover:text-[#171717] disabled:cursor-not-allowed disabled:opacity-40">
+        <svg lucideChevronRight></svg>
+    </button>
+</nav>
 
 @if (isCreateModalOpen()) {
 <div (click)="isCreateModalOpen.set(false)" class="fixed inset-0 z-999 flex items-center justify-center bg-[#fefefe]/20 p-4 backdrop-blur-sm">
