@@ -4,6 +4,8 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProjectData } from '../../../project-data';
 import { ProjectRecord } from '../../../types/Types';
+import { LucideChevronRight } from '@lucide/angular';
+import { Toast } from '../../../toast';
 
 interface WizardTask {
   id: number;
@@ -18,9 +20,11 @@ interface WizardEffort {
   estimatedHours: number;
 }
 
+type ProjectSector = "Healthcare" | "ECommerce" | "Education" | "Environment" | "Default";
+
 interface WizardDetails {
   customerAddress: string;
-  projectSector: string;
+  projectSector: ProjectSector;
   clientContactName: string;
   clientEmail: string;
   clientPmName: string;
@@ -38,12 +42,13 @@ interface WizardDetails {
 }
 
 @Component({
-  imports: [FormsModule],
+  imports: [FormsModule, LucideChevronRight],
   selector: 'app-create',
   styleUrl: './create.css',
   templateUrl: './create.html',
 })
 export class Create {
+  private readonly toast = inject(Toast);
   private readonly projectData = inject(ProjectData);
   private readonly router = inject(Router);
 
@@ -193,12 +198,13 @@ export class Create {
   }
 
   cancel(): void {
+    this.toast.inform("Cancelled creation.");
     void this.router.navigate(['/']);
   }
 
   private isCurrentStepValid(form: NgForm): boolean {
     if (this.currentStep() === 1) {
-      return form.valid === true && [
+      return form.valid === true && this.wizardDetails.projectSector !== "Default" && [
         this.draftProject.custName,
         this.wizardDetails.customerAddress,
         this.wizardDetails.projectSector,
@@ -245,7 +251,7 @@ export class Create {
   private createEmptyWizardDetails(): WizardDetails {
     return {
       customerAddress: '',
-      projectSector: '',
+      projectSector: 'Default',
       clientContactName: '',
       clientEmail: '',
       clientPmName: '',

@@ -90,8 +90,17 @@ export class ProjectData {
     return {
       ...project,
       custName: project.customerName,
+      projectStartDate: this.toDateInputValue(project.projectStartDate) ?? '',
+      projectEndDate: this.toDateInputValue(project.projectEndDate) ?? '',
+      revisedEndDate: this.toDateInputValue(project.revisedEndDate),
+      renewalDate: this.toDateInputValue(project.renewalDate),
+      projectIssueDate: this.toDateInputValue(project.projectIssueDate) ?? '',
       status: this.fromApiStatus(project.status),
     };
+  }
+
+  private toDateInputValue(value: string | undefined): string | undefined {
+    return value?.slice(0, 10);
   }
 
   private toApiStatus(status: ProjectStatus): ApiProjectStatus {

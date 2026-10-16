@@ -2,16 +2,18 @@
     <div class="mx-auto max-w-5xl rounded-lg border border-[#fefefe]/20 bg-[#171717] p-4 text-[#fefefe] sm:p-6">
         <div class="flex flex-wrap items-center gap-2 border-b border-[#fefefe]/20 pb-4 text-sm">
             @for (label of ['Client Details', 'Project Details', 'Add Task', 'Add Estimated Efforts']; track label; let index = $index) {
-            <button type="button" [disabled]="index + 1 >= currentStep()" (click)="goToStep(index + 1)"
-                class="rounded border px-3 py-2 transition-colors"
-                [style.border-color]="currentStep() === index + 1 ? '#fefefe' : 'transparent'"
-                [style.opacity]="index + 1 > currentStep() ? '0.5' : '1'"
-                [style.cursor]="index + 1 < currentStep() ? 'pointer' : 'default'">
-                <span class="mr-2 font-mono">{{ (index + 1).toString().padStart(2, '0') }}</span>{{ label }}
-            </button>
-            @if (index < 3) {
-            <span class="text-[#fefefe]/40" aria-hidden="true">&gt;</span>
-            }
+                <button type="button" [disabled]="index + 1 >= currentStep()" (click)="goToStep(index + 1)"
+                    class="rounded border px-3 py-2 transition-colors"
+                    [style.border-color]="currentStep() === index + 1 ? '#fefefe' : 'transparent'"
+                    [style.opacity]="index + 1 > currentStep() ? '0.5' : '1'"
+                    [style.cursor]="index + 1 < currentStep() ? 'pointer' : 'default'">
+                    <span class="mr-2 font-mono">{{ (index + 1).toString().padStart(2, '0') }}</span>{{ label }}
+                </button>
+                @if (index < 3) {
+                <span class="text-[#fefefe]/40" aria-hidden="true">
+                    <svg lucideChevronRight></svg>
+                </span>
+                }
             }
             <span class="rounded border border-transparent px-3 py-2"
                 [style.border-color]="currentStep() === 5 ? '#fefefe' : 'transparent'">Summary</span>
@@ -44,7 +46,13 @@
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Project sector *</span>
-                        <input required name="projectSector" [(ngModel)]="wizardDetails.projectSector" class="wizard-input" />
+                        <!-- <input required name="projectSector" [(ngModel)]="wizardDetails.projectSector" class="wizard-input" /> -->
+                        <select name="projectSector" [(ngModel)]="wizardDetails.projectSector" class="wizard-input">
+                            <option value="Default" disabled>Select an Option</option>
+                            @for (sector of ["Healthcare", "ECommerce", "Education", "Environment"]; track sector) {
+                                <option [ngValue]="sector">{{ sector }}</option>
+                            }
+                        </select>
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Client contact name</span>
@@ -269,11 +277,38 @@
 <div class="wizard-dialog-backdrop" (click)="cancelEffortDialog()">
     <section role="dialog" aria-modal="true" aria-labelledby="effort-dialog-title" class="wizard-dialog" (click)="$event.stopPropagation()">
         <form #effortForm="ngForm" (ngSubmit)="saveEffort()">
-        <h2 id="effort-dialog-title" class="mb-4 text-lg font-bold">{{ editingEffortId === null ? 'Add estimated effort' : 'Edit estimated effort' }}</h2>
-        <label class="mb-4 flex flex-col gap-1"><span class="text-sm font-semibold">Task *</span><select required name="effortDialogTask" [(ngModel)]="effortDraft.taskId" class="wizard-input"><option [ngValue]="null">Select a task</option>@for (task of tasks; track task.id) {<option [ngValue]="task.id">{{ task.name }}</option>}</select></label>
-        <label class="mb-4 flex flex-col gap-1"><span class="text-sm font-semibold">Person *</span><input required name="effortDialogPerson" [(ngModel)]="effortDraft.person" class="wizard-input" /></label>
-        <label class="mb-5 flex flex-col gap-1"><span class="text-sm font-semibold">Estimated hours *</span><input required type="number" min="1" name="effortDialogHours" [(ngModel)]="effortDraft.estimatedHours" class="wizard-input" /></label>
-        <div class="flex justify-end gap-2"><button type="button" (click)="cancelEffortDialog()" class="wizard-secondary-button">Cancel</button><button type="submit" class="wizard-primary-button">Save effort</button></div>
+            <h2 id="effort-dialog-title" class="mb-4 text-lg font-bold">
+                {{ editingEffortId === null ? 'Add estimated effort' : 'Edit estimated effort' }}
+            </h2>
+            <label class="mb-4 flex flex-col gap-1">
+                <span class="text-sm font-semibold">
+                Task *
+                </span>
+                <select required name="effortDialogTask" [(ngModel)]="effortDraft.taskId" class="wizard-input">
+                    <option [ngValue]="null">Select a task</option>
+                    @for (task of tasks; track task.id) {
+                        <option [ngValue]="task.id">
+                            {{ task.name }}
+                        </option>
+                    }
+                </select>
+            </label>
+            <label class="mb-4 flex flex-col gap-1">
+                <span class="text-sm font-semibold">
+                    Person *
+                </span>
+                <input required name="effortDialogPerson" [(ngModel)]="effortDraft.person" class="wizard-input" />
+            </label>
+            <label class="mb-5 flex flex-col gap-1">
+                <span class="text-sm font-semibold">
+                    Estimated hours *
+                </span>
+                <input required type="number" min="1" name="effortDialogHours" [(ngModel)]="effortDraft.estimatedHours" class="wizard-input" />
+            </label>
+            <div class="flex justify-end gap-2">
+                <button type="button" (click)="cancelEffortDialog()" class="wizard-secondary-button">Cancel</button>
+                <button type="submit" class="wizard-primary-button">Save effort</button>
+            </div>
         </form>
     </section>
 </div>
