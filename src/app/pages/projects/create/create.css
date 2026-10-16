@@ -1,0 +1,43 @@
+.wizard-input {
+    border: 1px solid rgb(254 254 254 / 30%);
+    border-radius: 0.25rem;
+    background: transparent;
+    padding: 0.5rem;
+}
+
+.wizard-secondary-button,
+.wizard-primary-button {
+    border: 1px solid #fefefe;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    transition: background-color 150ms, color 150ms;
+}
+
+.wizard-secondary-button:hover,
+.wizard-primary-button:hover {
+    background: #fefefe;
+    color: #171717;
+}
+
+.wizard-dialog-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+    background: rgb(0 0 0 / 65%);
+    backdrop-filter: blur(4px);
+}
+
+.wizard-dialog {
+    width: min(100%, 36rem);
+    max-height: min(90vh, 48rem);
+    overflow-y: auto;
+    border: 1px solid rgb(254 254 254 / 20%);
+    border-radius: 0.75rem;
+    background: #171717;
+    padding: 1.5rem;
+    color: #fefefe;
+    box-shadow: 0 24px 80px rgb(0 0 0 / 45%);
+}

@@ -1,18 +1,43 @@
 import { Component, computed, signal, inject, OnInit } from '@angular/core';
 import { DatePipe } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { LucideList, LucidePlus, LucideX, LucideChevronLeft, LucideChevronRight } from '@lucide/angular';
+import { FormsModule, NgForm } from '@angular/forms';
+import { HttpErrorResponse } from '@angular/common/http';
+import {
+  LucideCheck,
+  LucideChevronLeft,
+  LucideChevronRight,
+  LucideList,
+  LucideLoaderCircle,
+  LucidePencil,
+  LucidePlay,
+  LucidePlus,
+  LucideX,
+} from '@lucide/angular';
 import { ProjectStatus, ProjectRecord } from '../../types/Types';
 import { ProjectData } from '../../project-data';
+import { Router } from '@angular/router';
 
 
 @Component({
-  imports: [FormsModule, LucideList, LucidePlus, LucideX, DatePipe, LucideChevronLeft, LucideChevronRight],
+  imports: [
+    FormsModule, 
+    LucideList,
+    LucidePlus,
+    LucideX,
+    LucideChevronLeft,
+    LucideChevronRight,
+    LucideLoaderCircle,
+    LucidePlay,
+    LucideCheck,
+    LucidePencil,
+    DatePipe
+  ],
   selector: 'app-home',
   styleUrl: './home.css',
   templateUrl: './home.html',
 })
 export class Home implements OnInit {
+  constructor(private router: Router) {}
 
   private readonly projectData = inject(ProjectData);
 
@@ -43,12 +68,27 @@ export class Home implements OnInit {
   draftProject: ProjectRecord = this.createEmptyProject();
   editingProjectId = signal<string | null>(null);
 
+  isLoading = signal(true);
+  isSaving = signal(false);
+  isUpdatingStatus = signal(false);
+
+  loadErrorMessage = signal<string | null>(null);
+  validationErrorMessage = signal<string | null>(null);
+  saveErrorMessage = signal<string | null>(null);
+  statusErrorMessage = signal<string | null>(null);
+
   ngOnInit(): void {
+    this.isLoading.set(true);
+    this.loadErrorMessage.set(null);
+
     this.projectData.getProjects().subscribe({
       next: (projects) => {
         this.projectRecords.set(projects);
+        this.isLoading.set(false);
       },
       error: (error) => {
+        this.loadErrorMessage.set(`Failed to load projects: ${this.getErrorMessage(error)}`);
+        this.isLoading.set(false);
         console.error("Failed to load projects: ", error);
       }
     });
@@ -77,7 +117,13 @@ export class Home implements OnInit {
   openCreateModal(): void {
     this.editingProjectId.set(null);
     this.draftProject = this.createEmptyProject();
+    this.validationErrorMessage.set(null);
+    this.saveErrorMessage.set(null);
     this.isCreateModalOpen.set(true);
+  }
+
+  openCreateWizard(): void {
+    this.router.navigate(['/projects/create']);
   }
 
   editProject(project: ProjectRecord): void {
@@ -86,19 +132,34 @@ export class Home implements OnInit {
       ...project,
       renewalDate: project.renewalDate ?? this.getToday(),
     };
+    this.validationErrorMessage.set(null);
+    this.saveErrorMessage.set(null);
     this.isCreateModalOpen.set(true);
   }
 
-  saveProject(): void {
+  saveProject(form: NgForm): void {
+    if (form.invalid || !this.hasValidTextFields()) {
+      form.control.markAllAsTouched();
+      this.validationErrorMessage.set('Please complete all required fields before saving.');
+      return;
+    }
+
+    this.validationErrorMessage.set(null);
+    this.saveErrorMessage.set(null);
+    this.isSaving.set(true);
     const editingProjectId = this.editingProjectId();
 
     if (editingProjectId) {
+
       this.projectData.updateProject(editingProjectId, this.draftProject).subscribe({
         next: (updatedProject) => {
           this.projectRecords.update((projects) => projects.map((project) => project.projectId === editingProjectId ? updatedProject : project));
           this.isCreateModalOpen.set(false);
+          this.isSaving.set(false);
         },
         error: (error) => {
+          this.saveErrorMessage.set(`Failed to update project: ${this.getErrorMessage(error)}`);
+          this.isSaving.set(false);
           console.error("Failed to update project: ", error);
         }
       });
@@ -107,22 +168,29 @@ export class Home implements OnInit {
         next: (createdProject) => {
           this.projectRecords.update((projects) => [...projects, createdProject]);
           this.isCreateModalOpen.set(false);
+          this.isSaving.set(false);
         },
         error: (error) => {
+          this.saveErrorMessage.set(`Failed to create project: ${this.getErrorMessage(error)}`);
+          this.isSaving.set(false);
           console.error("Failed to create project: ", error);
         }
       })
     }
-
-    this.isCreateModalOpen.set(false);
   }
 
   changeProjectStatus(projectId: string, status: ProjectStatus): void {
+    this.isUpdatingStatus.set(true);
+    this.statusErrorMessage.set(null);
+
     this.projectData.updateProjectStatus(projectId, status).subscribe({
       next: (updatedProject) => { 
         this.projectRecords.update((projects) => projects.map((project) => project.projectId === projectId ? updatedProject : project));
+        this.isUpdatingStatus.set(false);
       },
       error: (error) => {
+        this.statusErrorMessage.set(`Failed to change status: ${this.getErrorMessage(error)}`);
+        this.isUpdatingStatus.set(false);
         console.error("Failed to change status: ", error);
       }
     });
@@ -150,5 +218,34 @@ export class Home implements OnInit {
 
   private getToday(): string {
     return new Date().toISOString().slice(0, 10);
+  }
+
+  private hasValidTextFields(): boolean {
+    return [
+      this.draftProject.custName,
+      this.draftProject.projectName,
+      this.draftProject.projectStartDate,
+      this.draftProject.projectEndDate,
+      this.draftProject.projectIssueDate,
+      this.draftProject.onshoreManagerName,
+      this.draftProject.offshoreManagerName,
+      this.draftProject.accountManagerName,
+    ].every((value) => value.trim().length > 0);
+  }
+
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof HttpErrorResponse) {
+      if (typeof error.error === 'string' && error.error.trim()) {
+        return error.error;
+      }
+
+      if (error.error && typeof error.error.message === 'string' && error.error.message.trim()) {
+        return error.error.message;
+      }
+
+      return `Request failed with status ${error.status}.`;
+    }
+
+    return error instanceof Error ? error.message : 'An unexpected error occurred.';
   }
 }

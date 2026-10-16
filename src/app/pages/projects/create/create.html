@@ -1,0 +1,280 @@
+<div class="mx-4 mt-6 sm:mx-6 sm:mt-10 lg:mx-10">
+    <div class="mx-auto max-w-5xl rounded-lg border border-[#fefefe]/20 bg-[#171717] p-4 text-[#fefefe] sm:p-6">
+        <div class="flex flex-wrap items-center gap-2 border-b border-[#fefefe]/20 pb-4 text-sm">
+            @for (label of ['Client Details', 'Project Details', 'Add Task', 'Add Estimated Efforts']; track label; let index = $index) {
+            <button type="button" [disabled]="index + 1 >= currentStep()" (click)="goToStep(index + 1)"
+                class="rounded border px-3 py-2 transition-colors"
+                [style.border-color]="currentStep() === index + 1 ? '#fefefe' : 'transparent'"
+                [style.opacity]="index + 1 > currentStep() ? '0.5' : '1'"
+                [style.cursor]="index + 1 < currentStep() ? 'pointer' : 'default'">
+                <span class="mr-2 font-mono">{{ (index + 1).toString().padStart(2, '0') }}</span>{{ label }}
+            </button>
+            @if (index < 3) {
+            <span class="text-[#fefefe]/40" aria-hidden="true">&gt;</span>
+            }
+            }
+            <span class="rounded border border-transparent px-3 py-2"
+                [style.border-color]="currentStep() === 5 ? '#fefefe' : 'transparent'">Summary</span>
+        </div>
+
+        <form #projectForm="ngForm" (ngSubmit)="currentStep() === 5 ? saveProject(projectForm) : nextStep(projectForm)"
+            class="mt-6" novalidate>
+            @if (validationErrorMessage()) {
+            <div role="alert" class="mb-4 rounded border border-red-400/60 bg-red-950/40 px-4 py-3 text-red-100">
+                {{ validationErrorMessage() }}
+            </div>
+            }
+            @if (saveErrorMessage()) {
+            <div role="alert" class="mb-4 rounded border border-red-400/60 bg-red-950/40 px-4 py-3 text-red-100">
+                {{ saveErrorMessage() }}
+            </div>
+            }
+
+            @if (currentStep() === 1) {
+            <section>
+                <h1 class="mb-4 text-xl font-bold">Client Details</h1>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Customer name *</span>
+                        <input required name="customerName" [(ngModel)]="draftProject.custName" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Customer address *</span>
+                        <input required name="customerAddress" [(ngModel)]="wizardDetails.customerAddress" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Project sector *</span>
+                        <input required name="projectSector" [(ngModel)]="wizardDetails.projectSector" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Client contact name</span>
+                        <input name="clientContactName" [(ngModel)]="wizardDetails.clientContactName" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Client email</span>
+                        <input type="email" name="clientEmail" [(ngModel)]="wizardDetails.clientEmail" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Client project manager</span>
+                        <input name="clientPmName" [(ngModel)]="wizardDetails.clientPmName" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Client PM email</span>
+                        <input type="email" name="clientPmEmail" [(ngModel)]="wizardDetails.clientPmEmail" class="wizard-input" />
+                    </label>
+                </div>
+            </section>
+            }
+
+            @if (currentStep() === 2) {
+            <section>
+                <h1 class="mb-4 text-xl font-bold">Project Details</h1>
+                <div class="grid gap-4 md:grid-cols-2">
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Project name *</span>
+                        <input required name="projectName" [(ngModel)]="draftProject.projectName" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Project domain *</span>
+                        <input required name="domain" [(ngModel)]="wizardDetails.domain" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1 md:col-span-2">
+                        <span class="text-sm font-semibold">Project brief description *</span>
+                        <textarea required name="projectDescription" [(ngModel)]="wizardDetails.projectDescription" class="wizard-input"></textarea>
+                    </label>
+                    <label class="flex flex-col gap-1 md:col-span-2">
+                        <span class="text-sm font-semibold">Project brief scope *</span>
+                        <textarea required name="scope" [(ngModel)]="wizardDetails.scope" class="wizard-input"></textarea>
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Project managed by *</span>
+                        <input required name="managedBy" [(ngModel)]="wizardDetails.managedBy" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Project type *</span>
+                        <input required name="type" [(ngModel)]="wizardDetails.type" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Total value</span>
+                        <input type="number" min="0" name="totalValue" [(ngModel)]="wizardDetails.totalValue" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Methodology</span>
+                        <input required name="methodology" [(ngModel)]="wizardDetails.methodology" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Technology</span>
+                        <input name="technology" [(ngModel)]="wizardDetails.technology" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Start date</span>
+                        <input required type="date" name="projectStartDate" [(ngModel)]="draftProject.projectStartDate" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Expected end date</span>
+                        <input required type="date" name="projectEndDate" [(ngModel)]="draftProject.projectEndDate" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Project issue date</span>
+                        <input required type="date" name="projectIssueDate" [(ngModel)]="draftProject.projectIssueDate" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Project estimated hours *</span>
+                        <input required type="number" min="0" name="estimatedHours" [(ngModel)]="draftProject.estimatedHours" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Onshore manager</span>
+                        <input required name="onshoreManager" [(ngModel)]="draftProject.onshoreManagerName" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Offshore manager</span>
+                        <input required name="offshoreManager" [(ngModel)]="draftProject.offshoreManagerName" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Project lead</span>
+                        <input name="lead" [(ngModel)]="wizardDetails.lead" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Stakeholders</span>
+                        <input name="stakeholders" [(ngModel)]="wizardDetails.stakeholders" class="wizard-input" />
+                    </label>
+                    <label class="flex flex-col gap-1">
+                        <span class="text-sm font-semibold">Account manager</span>
+                        <input required name="accountManager" [(ngModel)]="draftProject.accountManagerName" class="wizard-input" />
+                    </label>
+                </div>
+            </section>
+            }
+
+            @if (currentStep() === 3) {
+            <section>
+                <div class="mb-4 flex items-center justify-between">
+                    <h1 class="text-xl font-bold">Add Task</h1>
+                    <button type="button" (click)="addTask()" class="wizard-secondary-button">Add task</button>
+                </div>
+                <div class="space-y-3">
+                    @for (task of tasks; track task.id; let index = $index) {
+                    <div class="flex items-start justify-between gap-4 rounded border border-[#fefefe]/20 p-4">
+                        <div><h2 class="font-semibold">{{ task.name }}</h2><p class="mt-1 text-sm text-[#fefefe]/65">{{ task.description }}</p></div>
+                        <div class="flex shrink-0 gap-2">
+                            <button type="button" (click)="editTask(task)" class="wizard-secondary-button">Edit</button>
+                            <button type="button" (click)="removeTask(index)" class="wizard-secondary-button">Remove</button>
+                        </div>
+                    </div>
+                    } @empty {
+                    <p class="rounded border border-dashed border-[#fefefe]/25 p-6 text-center text-sm text-[#fefefe]/60">No tasks added yet.</p>
+                    }
+                </div>
+            </section>
+            }
+
+            @if (currentStep() === 4) {
+            <section>
+                <div class="mb-4 flex items-center justify-between">
+                    <h1 class="text-xl font-bold">Add Estimated Efforts</h1>
+                    <button type="button" (click)="addEffort()" class="wizard-secondary-button">Add effort</button>
+                </div>
+                <div class="space-y-3">
+                    @for (effort of efforts; track effort.id; let index = $index) {
+                    <div class="flex items-center justify-between gap-4 rounded border border-[#fefefe]/20 p-4">
+                        <p><strong>{{ taskName(effort.taskId) }}</strong> · {{ effort.person }} · {{ effort.estimatedHours }} hours</p>
+                        <div class="flex shrink-0 gap-2">
+                            <button type="button" (click)="editEffort(effort)" class="wizard-secondary-button">Edit</button>
+                            <button type="button" (click)="removeEffort(index)" class="wizard-secondary-button">Remove</button>
+                        </div>
+                    </div>
+                    } @empty {
+                    <p class="rounded border border-dashed border-[#fefefe]/25 p-6 text-center text-sm text-[#fefefe]/60">No estimated efforts added yet.</p>
+                    }
+                </div>
+                <button type="button" (click)="addEffort()" [disabled]="tasks.length === 0" class="wizard-secondary-button mt-3 disabled:cursor-not-allowed disabled:opacity-40">Add effort</button>
+                <p class="mt-4 text-right font-semibold">Total estimated effort: {{ totalEstimatedEffort() }} hours</p>
+            </section>
+            }
+
+            @if (currentStep() === 5) {
+            <section>
+                <h1 class="mb-4 text-xl font-bold">Summary</h1>
+                <div class="grid gap-4 rounded border border-[#fefefe]/20 p-4 md:grid-cols-2">
+                    <p><strong>Customer:</strong> {{ draftProject.custName }}</p>
+                    <p><strong>Address:</strong> {{ wizardDetails.customerAddress }}</p>
+                    <p><strong>Sector:</strong> {{ wizardDetails.projectSector }}</p>
+                    <p><strong>Client contact:</strong> {{ wizardDetails.clientContactName || '—' }} {{ wizardDetails.clientEmail ? '· ' + wizardDetails.clientEmail : '' }}</p>
+                    <p><strong>Client designated PM:</strong> {{ wizardDetails.clientPmName || '—' }} {{ wizardDetails.clientPmEmail ? '· ' + wizardDetails.clientPmEmail : '' }}</p>
+                    <p><strong>Project:</strong> {{ draftProject.projectName }}</p>
+                    <p><strong>Description:</strong> {{ wizardDetails.projectDescription }}</p>
+                    <p><strong>Scope:</strong> {{ wizardDetails.scope }}</p>
+                    <p><strong>Managed by:</strong> {{ wizardDetails.managedBy }}</p>
+                    <p><strong>Domain / Type:</strong> {{ wizardDetails.domain }} / {{ wizardDetails.type }}</p>
+                    <p><strong>Total value:</strong> {{ wizardDetails.totalValue ?? '—' }}</p>
+                    <p><strong>Methodology:</strong> {{ wizardDetails.methodology }}</p>
+                    <p><strong>Technology:</strong> {{ wizardDetails.technology || '—' }}</p>
+                    <p><strong>Dates:</strong> {{ draftProject.projectStartDate }} to {{ draftProject.projectEndDate }}</p>
+                    <p><strong>Project issue date:</strong> {{ draftProject.projectIssueDate }}</p>
+                    <p><strong>Project estimated hours:</strong> {{ draftProject.estimatedHours }}</p>
+                    <p><strong>Onshore manager:</strong> {{ draftProject.onshoreManagerName }}</p>
+                    <p><strong>Offshore manager:</strong> {{ draftProject.offshoreManagerName }}</p>
+                    <p><strong>Lead:</strong> {{ wizardDetails.lead || '—' }}</p>
+                    <p><strong>Stakeholders:</strong> {{ wizardDetails.stakeholders || '—' }}</p>
+                    <p><strong>Account manager:</strong> {{ draftProject.accountManagerName }}</p>
+                    <p><strong>Task effort total:</strong> {{ totalEstimatedEffort() }} hours</p>
+                </div>
+                <h2 class="mt-6 mb-2 font-semibold">Tasks</h2>
+                <div class="space-y-2">
+                    @for (task of tasks; track task.id) {
+                    <p class="rounded border border-[#fefefe]/20 px-3 py-2"><strong>{{ task.name }}</strong> — {{ task.description }}</p>
+                    } @empty { <p class="text-sm text-[#fefefe]/60">No tasks added.</p> }
+                </div>
+                <h2 class="mt-6 mb-2 font-semibold">Estimated efforts</h2>
+                <div class="space-y-2">
+                    @for (effort of efforts; track $index) {
+                    <p class="rounded border border-[#fefefe]/20 px-3 py-2">
+                        {{ taskName(effort.taskId) }} - {{ effort.person }} - {{ effort.estimatedHours }} hours
+                    </p>
+                    } @empty { <p class="text-sm text-[#fefefe]/60">No estimated efforts added.</p> }
+                </div>
+            </section>
+            }
+
+            <div class="mt-6 flex justify-between gap-3 border-t border-[#fefefe]/20 pt-4">
+                <button type="button" (click)="currentStep() === 1 ? cancel() : previousStep()" class="wizard-secondary-button">
+                    {{ currentStep() === 1 ? 'Cancel' : 'Back' }}
+                </button>
+                @if (currentStep() < 5) {
+                <button type="submit" class="wizard-primary-button">Next</button>
+                } @else {
+                <button type="submit" [disabled]="isSaving()" class="wizard-primary-button disabled:cursor-not-allowed disabled:opacity-40">
+                    {{ isSaving() ? 'Creating...' : 'Create project' }}
+                </button>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (taskDialogOpen()) {
+<div class="wizard-dialog-backdrop" (click)="cancelTaskDialog()">
+    <section role="dialog" aria-modal="true" aria-labelledby="task-dialog-title" class="wizard-dialog" (click)="$event.stopPropagation()">
+        <form #taskForm="ngForm" (ngSubmit)="saveTask()">
+        <h2 id="task-dialog-title" class="mb-4 text-lg font-bold">{{ editingTaskId === null ? 'Add task' : 'Edit task' }}</h2>
+        <label class="mb-4 flex flex-col gap-1"><span class="text-sm font-semibold">Task name *</span><input required name="taskDialogName" [(ngModel)]="taskDraft.name" class="wizard-input" /></label>
+        <label class="mb-5 flex flex-col gap-1"><span class="text-sm font-semibold">Description *</span><textarea required name="taskDialogDescription" [(ngModel)]="taskDraft.description" class="wizard-input"></textarea></label>
+        <div class="flex justify-end gap-2"><button type="button" (click)="cancelTaskDialog()" class="wizard-secondary-button">Cancel</button><button type="submit" class="wizard-primary-button">Save task</button></div>
+        </form>
+    </section>
+</div>
+}
+
+@if (effortDialogOpen()) {
+<div class="wizard-dialog-backdrop" (click)="cancelEffortDialog()">
+    <section role="dialog" aria-modal="true" aria-labelledby="effort-dialog-title" class="wizard-dialog" (click)="$event.stopPropagation()">
+        <form #effortForm="ngForm" (ngSubmit)="saveEffort()">
+        <h2 id="effort-dialog-title" class="mb-4 text-lg font-bold">{{ editingEffortId === null ? 'Add estimated effort' : 'Edit estimated effort' }}</h2>
+        <label class="mb-4 flex flex-col gap-1"><span class="text-sm font-semibold">Task *</span><select required name="effortDialogTask" [(ngModel)]="effortDraft.taskId" class="wizard-input"><option [ngValue]="null">Select a task</option>@for (task of tasks; track task.id) {<option [ngValue]="task.id">{{ task.name }}</option>}</select></label>
+        <label class="mb-4 flex flex-col gap-1"><span class="text-sm font-semibold">Person *</span><input required name="effortDialogPerson" [(ngModel)]="effortDraft.person" class="wizard-input" /></label>
+        <label class="mb-5 flex flex-col gap-1"><span class="text-sm font-semibold">Estimated hours *</span><input required type="number" min="1" name="effortDialogHours" [(ngModel)]="effortDraft.estimatedHours" class="wizard-input" /></label>
+        <div class="flex justify-end gap-2"><button type="button" (click)="cancelEffortDialog()" class="wizard-secondary-button">Cancel</button><button type="submit" class="wizard-primary-button">Save effort</button></div>
+        </form>
+    </section>
+</div>
+}
