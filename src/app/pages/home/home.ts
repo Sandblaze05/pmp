@@ -16,6 +16,7 @@ import {
 import { ProjectStatus, ProjectRecord } from '../../types/Types';
 import { ProjectData } from '../../project-data';
 import { Router } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 
 @Component({
@@ -46,24 +47,20 @@ export class Home implements OnInit {
   selectedStatus = signal<ProjectStatus>(1);
   readonly pageSize = 10;
   currentPage = signal(1);
+  private readonly statusCounts = signal<Record<ProjectStatus, number>>({ 0: 0, 1: 0, 3: 0 });
+  private readonly hasNextPage = signal(false);
 
-  inProgress = computed(() => this.countProjectsByStatus(0));
-  newProjects = computed(() => this.countProjectsByStatus(1));
-  completed = computed(() => this.countProjectsByStatus(3));
+  inProgress = computed(() => this.statusCounts()[0]);
+  newProjects = computed(() => this.statusCounts()[1]);
+  completed = computed(() => this.statusCounts()[3]);
 
   isCreateModalOpen = signal<boolean>(false);
 
   projectRecords = signal<ProjectRecord[]>([]);
 
-  filteredProjects = computed(() =>
-    this.projectRecords().filter((project) => project.status === this.selectedStatus()),
-  );
-  totalPages = computed(() => Math.ceil(this.filteredProjects().length / this.pageSize));
-  displayedPage = computed(() => Math.min(this.currentPage(), Math.max(this.totalPages(), 1)));
-  pagedProjects = computed(() => {
-    const start = (this.displayedPage() - 1) * this.pageSize;
-    return this.filteredProjects().slice(start, start + this.pageSize);
-  });
+  totalPages = computed(() => Math.max(Math.ceil(this.statusCounts()[this.selectedStatus()] / this.pageSize), 1));
+  displayedPage = computed(() => this.currentPage());
+  pagedProjects = computed(() => this.projectRecords());
 
   draftProject: ProjectRecord = this.createEmptyProject();
   editingProjectId = signal<string | null>(null);
@@ -81,9 +78,64 @@ export class Home implements OnInit {
     this.isLoading.set(true);
     this.loadErrorMessage.set(null);
 
-    this.projectData.getProjects().subscribe({
-      next: (projects) => {
-        this.projectRecords.set(projects);
+    forkJoin({
+      inProgress: this.projectData.getProjectsPageByStatus(1, 0),
+      newProjects: this.projectData.getProjectsPageByStatus(1, 1),
+      completed: this.projectData.getProjectsPageByStatus(1, 3),
+    }).subscribe({
+      next: (pages) => {
+        this.statusCounts.set({
+          0: pages.inProgress.totalCount,
+          1: pages.newProjects.totalCount,
+          3: pages.completed.totalCount,
+        });
+        const selectedPage = pages.newProjects;
+        this.projectRecords.set(selectedPage.projects);
+        this.hasNextPage.set(selectedPage.hasNextPage);
+        this.isLoading.set(false);
+      },
+      error: (error) => {
+        this.loadErrorMessage.set(`Failed to load projects: ${this.getErrorMessage(error)}`);
+        this.isLoading.set(false);
+        console.error("Failed to load projects: ", error);
+      },
+    });
+  }
+
+  selectStatus(status: ProjectStatus): void {
+    this.selectedStatus.set(status);
+    this.currentPage.set(1);
+    this.loadStatusPage(status, 1, true);
+  }
+
+  previousPage(): void {
+    const page = Math.max(this.currentPage() - 1, 1);
+    if (page !== this.currentPage()) {
+      this.currentPage.set(page);
+      this.loadStatusPage(this.selectedStatus(), page);
+    }
+  }
+
+  nextPage(): void {
+    const page = this.currentPage() + 1;
+    if (page <= this.totalPages() && this.hasNextPage()) {
+      this.currentPage.set(page);
+      this.loadStatusPage(this.selectedStatus(), page);
+    }
+  }
+
+  private loadStatusPage(status: ProjectStatus, page: number, showLoading = false): void {
+    if (showLoading) {
+      this.isLoading.set(true);
+    }
+
+    this.projectData.getProjectsPageByStatus(page, status).subscribe({
+      next: (result) => {
+        if (status === this.selectedStatus()) {
+          this.projectRecords.set(result.projects);
+          this.hasNextPage.set(result.hasNextPage);
+        }
+        this.statusCounts.update((counts) => ({ ...counts, [status]: result.totalCount }));
         this.isLoading.set(false);
       },
       error: (error) => {
@@ -92,19 +144,6 @@ export class Home implements OnInit {
         console.error("Failed to load projects: ", error);
       }
     });
-  }
-
-  selectStatus(status: ProjectStatus): void {
-    this.selectedStatus.set(status);
-    this.currentPage.set(1);
-  }
-
-  previousPage(): void {
-    this.currentPage.update((page) => Math.max(page - 1, 1));
-  }
-
-  nextPage(): void {
-    this.currentPage.update((page) => Math.min(page + 1, this.totalPages()));
   }
 
   // generateProjectId(): string {
@@ -185,7 +224,7 @@ export class Home implements OnInit {
 
     this.projectData.updateProjectStatus(projectId, status).subscribe({
       next: (updatedProject) => { 
-        this.projectRecords.update((projects) => projects.map((project) => project.projectId === projectId ? updatedProject : project));
+        this.loadStatusPage(this.selectedStatus(), this.currentPage());
         this.isUpdatingStatus.set(false);
       },
       error: (error) => {
@@ -194,10 +233,6 @@ export class Home implements OnInit {
         console.error("Failed to change status: ", error);
       }
     });
-  }
-
-  private countProjectsByStatus(status: ProjectStatus): number {
-    return this.projectRecords().filter((project) => project.status === status).length;
   }
 
   private createEmptyProject(): ProjectRecord {
@@ -241,6 +276,21 @@ export class Home implements OnInit {
 
       if (error.error && typeof error.error.message === 'string' && error.error.message.trim()) {
         return error.error.message;
+      }
+
+      if (error.error && typeof error.error.detail === 'string' && error.error.detail.trim()) {
+        return error.error.detail;
+      }
+
+      if (error.error && typeof error.error.title === 'string' && error.error.title.trim()) {
+        return error.error.title;
+      }
+
+      if (error.error?.errors && typeof error.error.errors === 'object') {
+        return Object.values(error.error.errors as Record<string, string[]>)
+          .flat()
+          .filter(Boolean)
+          .join(' ');
       }
 
       return `Request failed with status ${error.status}.`;

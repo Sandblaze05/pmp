@@ -1,62 +1,131 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { map, Observable } from 'rxjs';
-import { ProjectRecord, ProjectStatus } from './types/Types';
+import { 
+  map, 
+  Observable,
+  catchError,
+  shareReplay,
+  tap,
+  throwError
+} from 'rxjs';
+import {
+  ApiProjectListResponse,
+  ApiProjectResponse,
+  ApiProjectStatus,
+  ProjectEffort,
+  ProjectPage,
+  ProjectRecord,
+  ProjectRequest,
+  ProjectStatus,
+  ProjectTask,
+  ProjectWizardDetails,
+  UpdateProjectStatusRequest,
+  CacheEntry
+} from './types/Types';
 import { environment } from '../environments/environment';
-
-type ApiProjectStatus = 'InProgress' | 'PendingApproval' | 'Completed';
-
-interface ApiProjectResponse extends Omit<ProjectRecord, 'custName' | 'status'> {
-  customerName: string;
-  status: ApiProjectStatus;
-}
-
-interface ProjectRequest {
-  customerName: string;
-  projectName: string;
-  projectStartDate: string;
-  projectEndDate: string;
-  revisedEndDate?: string;
-  renewalDate?: string;
-  projectIssueDate: string;
-  estimatedHours: number;
-  actualHours?: number;
-  onshoreManagerName: string;
-  offshoreManagerName: string;
-  accountManagerName: string;
-}
-
-interface UpdateProjectStatusRequest {
-  status: ApiProjectStatus;
-}
 
 @Injectable({ providedIn: 'root' })
 export class ProjectData {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = environment.projectApiUrl;
+  private readonly cache = new Map<string, CacheEntry>();
+  private readonly cacheTtl = 5 * 60 * 1000;
+
+  private cacheRead<T>(
+    key: string,
+    request: () => Observable<T>
+  ): Observable<T> {
+    const existing = this.cache.get(key);
+
+    if (existing && existing.expiresAt > Date.now()) {
+      return existing.value as Observable<T>;
+    }
+
+    this.cache.delete(key);
+
+    const value = request().pipe(
+      catchError((error) => {
+        this.cache.delete(key);
+        return throwError(() => error);
+      }),
+      shareReplay({ bufferSize: 1, refCount: false })
+    );
+
+    this.cache.set(key, {
+      expiresAt: Date.now() + this.cacheTtl,
+      value,
+    });
+
+    return value;
+  }
+
+  private invalidateProjectCache(projectId?: string): void {
+    for (const key of this.cache.keys()) {
+      if (key.startsWith('projects:list:')) {
+        this.cache.delete(key);
+      }
+    }
+
+    if (projectId) {
+      this.cache.delete(`projects:detail:${projectId}`);
+    }
+  }
 
   getProjects(): Observable<ProjectRecord[]> {
-    return this.http
-      .get<ApiProjectResponse[]>(this.apiUrl)
-      .pipe(map((projects) => projects.map((project) => this.fromResponse(project))));
+    return this.getProjectsPage(1).pipe(map((page) => page.projects));
+  }
+
+  getProjectsPage(page: number): Observable<ProjectPage> {
+    return this.getProjectsPageByStatus(page);
+  }
+
+  getProjectsPageByStatus(page: number, status?: ProjectStatus): Observable<ProjectPage> {
+    const statusKey = status === undefined ? 'all' : String(status);
+    const key = `projects:list:${page}:${statusKey}`;
+
+    return this.cacheRead(key, () => {
+      let params = new HttpParams().set('page', page);
+
+      if (status !== undefined) {
+        params = params.set('status', this.toApiStatus(status));
+      }
+
+      return this.http
+        .get<ApiProjectListResponse>(this.apiUrl, { params })
+        .pipe(
+          map((response) => ({
+            projects: response.items.map((project) => this.fromResponse(project)),
+            hasNextPage: response.hasNextPage,
+            totalCount: response.totalCount,
+          })),
+        );
+    });
   }
 
   getProject(projectId: string): Observable<ProjectRecord> {
-    return this.http
-      .get<ApiProjectResponse>(`${this.apiUrl}/${projectId}`)
-      .pipe(map((project) => this.fromResponse(project)));
+    return this.cacheRead(`projects:detail:${projectId}`, () => 
+      this.http
+        .get<ApiProjectResponse>(`${this.apiUrl}/${projectId}`)
+        .pipe(map((project) => this.fromResponse(project)))
+    ); 
   }
 
   createProject(project: ProjectRecord): Observable<ProjectRecord> {
     return this.http
       .post<ApiProjectResponse>(this.apiUrl, this.toRequest(project))
-      .pipe(map((createdProject) => this.fromResponse(createdProject)));
+      .pipe(
+        map((createdProject) => this.fromResponse(createdProject)),
+        tap(() => this.invalidateProjectCache())
+    );
   }
 
   updateProject(projectId: string, project: ProjectRecord): Observable<ProjectRecord> {
     return this.http
       .put<ApiProjectResponse>(`${this.apiUrl}/${projectId}`, this.toRequest(project))
-      .pipe(map((updatedProject) => this.fromResponse(updatedProject)));
+      .pipe(
+        map((updatedProject) => this.fromResponse(updatedProject)),
+        tap(() => this.invalidateProjectCache(projectId))
+      );
   }
 
   updateProjectStatus(
@@ -66,7 +135,10 @@ export class ProjectData {
     const request: UpdateProjectStatusRequest = { status: this.toApiStatus(status) };
     return this.http
       .patch<ApiProjectResponse>(`${this.apiUrl}/${projectId}`, request)
-      .pipe(map((updatedProject) => this.fromResponse(updatedProject)));
+      .pipe(
+        map((updatedProject) => this.fromResponse(updatedProject)),
+        tap(() => this.invalidateProjectCache(projectId))
+      );
   }
 
   private toRequest(project: ProjectRecord): ProjectRequest {
@@ -83,6 +155,9 @@ export class ProjectData {
       onshoreManagerName: project.onshoreManagerName,
       offshoreManagerName: project.offshoreManagerName,
       accountManagerName: project.accountManagerName,
+      wizardDetails: project.wizardDetails ?? this.emptyWizardDetails(),
+      tasks: project.tasks ?? [],
+      efforts: project.efforts ?? [],
     };
   }
 
@@ -123,5 +198,26 @@ export class ProjectData {
       case 'Completed':
         return 3;
     }
+  }
+
+  private emptyWizardDetails(): ProjectWizardDetails {
+    return {
+      customerAddress: '',
+      projectSector: '',
+      clientContactName: '',
+      clientEmail: '',
+      clientPmName: '',
+      clientPmEmail: '',
+      projectDescription: '',
+      scope: '',
+      managedBy: '',
+      domain: '',
+      type: '',
+      totalValue: null,
+      methodology: '',
+      technology: '',
+      lead: '',
+      stakeholders: '',
+    };
   }
 }

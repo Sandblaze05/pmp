@@ -3,43 +3,16 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProjectData } from '../../../project-data';
-import { ProjectRecord } from '../../../types/Types';
+import {
+  ProjectRecord,
+  WizardDetails,
+  WizardEffort,
+  WizardTask,
+} from '../../../types/Types';
 import { LucideChevronRight } from '@lucide/angular';
 import { Toast } from '../../../toast';
 
-interface WizardTask {
-  id: number;
-  name: string;
-  description: string;
-}
-
-interface WizardEffort {
-  id: number;
-  taskId: number | null;
-  person: string;
-  estimatedHours: number;
-}
-
-type ProjectSector = "Healthcare" | "ECommerce" | "Education" | "Environment" | "Default";
-
-interface WizardDetails {
-  customerAddress: string;
-  projectSector: ProjectSector;
-  clientContactName: string;
-  clientEmail: string;
-  clientPmName: string;
-  clientPmEmail: string;
-  projectDescription: string;
-  scope: string;
-  managedBy: string;
-  domain: string;
-  type: string;
-  totalValue: number | null;
-  methodology: string;
-  technology: string;
-  lead: string;
-  stakeholders: string;
-}
+const SECTORS = ["Automobile", "Business", "Education", "Digital Media", "Default"] as const;
 
 @Component({
   imports: [FormsModule, LucideChevronRight],
@@ -48,6 +21,7 @@ interface WizardDetails {
   templateUrl: './create.html',
 })
 export class Create {
+  private readonly sectors = SECTORS;
   private readonly toast = inject(Toast);
   private readonly projectData = inject(ProjectData);
   private readonly router = inject(Router);
@@ -184,9 +158,21 @@ export class Create {
     this.saveErrorMessage.set(null);
     this.isSaving.set(true);
 
-    this.projectData.createProject(this.draftProject).subscribe({
+    const projectToSave: ProjectRecord = {
+      ...this.draftProject,
+      wizardDetails: this.wizardDetails,
+      tasks: this.tasks.map(({ name, description }) => ({ name, description })),
+      efforts: this.efforts.map((effort) => ({
+        person: effort.person,
+        taskName: this.taskName(effort.taskId),
+        estimatedHours: Number(effort.estimatedHours),
+      })),
+    };
+
+    this.projectData.createProject(projectToSave).subscribe({
       next: () => {
         this.isSaving.set(false);
+        this.toast.inform("Project created.");
         void this.router.navigate(['/']);
       },
       error: (error: unknown) => {
@@ -285,6 +271,21 @@ export class Create {
 
       if (error.error && typeof error.error.message === 'string' && error.error.message.trim()) {
         return error.error.message;
+      }
+
+      if (error.error && typeof error.error.detail === 'string' && error.error.detail.trim()) {
+        return error.error.detail;
+      }
+
+      if (error.error && typeof error.error.title === 'string' && error.error.title.trim()) {
+        return error.error.title;
+      }
+
+      if (error.error?.errors && typeof error.error.errors === 'object') {
+        return Object.values(error.error.errors as Record<string, string[]>)
+          .flat()
+          .filter(Boolean)
+          .join(' ');
       }
 
       return `Request failed with status ${error.status}.`;

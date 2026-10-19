@@ -49,7 +49,7 @@
                         <!-- <input required name="projectSector" [(ngModel)]="wizardDetails.projectSector" class="wizard-input" /> -->
                         <select name="projectSector" [(ngModel)]="wizardDetails.projectSector" class="wizard-input">
                             <option value="Default" disabled>Select an Option</option>
-                            @for (sector of ["Healthcare", "ECommerce", "Education", "Environment"]; track sector) {
+                            @for (sector of sectors; track sector) {
                                 <option [ngValue]="sector">{{ sector }}</option>
                             }
                         </select>

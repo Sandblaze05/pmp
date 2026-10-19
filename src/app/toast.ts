@@ -1,12 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-
-type ToastType = "error" | "warning" | "info";
-
-export interface ToastMessage {
-    id: number;
-    message: string;
-    type: ToastType;
-}
+import { ToastMessage, ToastType } from './types/Types';
 
 @Injectable({ providedIn: "root" })
 export class Toast {
