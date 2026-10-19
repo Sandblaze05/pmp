@@ -99,7 +99,7 @@
             } @else {
                 @for (project of pagedProjects(); track project.projectId) {
                 <tr class="transition-colors hover:bg-[#fefefe]/4">
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums font-mono text-xs">{{ project.projectId }}</td>
+                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums font-mono text-xs"><span title="More Details" class="hover:text-blue-300 hover:underline cursor-pointer" (click)="openProjectDetails(project.projectId)">{{ project.projectId }}</span></td>
                     <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.custName }}</td>
                     <td class="whitespace-nowrap px-4 py-3.5 tabular-nums font-medium">{{ project.projectName }}</td>
                     <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.projectStartDate | date:'dd-MM-yyyy' }}</td>
@@ -180,20 +180,6 @@
     </table>
 </div>
 
-@if (loadErrorMessage()) {
-<div role="alert"
-    class="rounded-lg border border-[#fefefe]/30 bg-[#fefefe]/10 px-4 py-3 text-sm font-medium mx-4 mt-4 sm:mx-6 lg:mx-10">
-    {{ loadErrorMessage() }}
-</div>
-}
-
-@if (statusErrorMessage()) {
-<div role="alert"
-    class="rounded-lg border border-[#fefefe]/30 bg-[#fefefe]/10 px-4 py-3 text-sm font-medium mx-4 mt-4 sm:mx-6 lg:mx-10">
-    {{ statusErrorMessage() }}
-</div>
-}
-
 <nav aria-label="Project list pages" class="mx-4 my-6 flex items-center justify-center gap-4 sm:mx-6 lg:mx-10">
     <button type="button"
         class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-2 py-1 text-xs border-[#fefefe]/30 hover:bg-[#fefefe] hover:text-[#171717] disabled:hover:bg-transparent disabled:hover:text-inherit"
@@ -233,17 +219,6 @@
 
         <form #projectForm="ngForm" (ngSubmit)="saveProject(projectForm)"
             class="mt-6 grid gap-x-4 gap-y-5 md:grid-cols-2" novalidate autocomplete="off">
-            @if (validationErrorMessage()) {
-            <div role="alert"
-                class="rounded-lg border border-[#fefefe]/30 bg-[#fefefe]/10 px-4 py-3 text-sm font-medium md:col-span-2">
-                {{ validationErrorMessage() }}</div>
-            }
-            @if (saveErrorMessage()) {
-            <div role="alert"
-                class="rounded-lg border border-[#fefefe]/30 bg-[#fefefe]/10 px-4 py-3 text-sm font-medium md:col-span-2">
-                {{ saveErrorMessage() }}</div>
-            }
-
             <label class="flex flex-col gap-1.5">
                 <span class="text-xs font-medium text-[#fefefe]/75">Customer name <span
                         aria-hidden="true">*</span></span>

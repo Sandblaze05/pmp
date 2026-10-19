@@ -17,6 +17,7 @@ import { ProjectStatus, ProjectRecord } from '../../types/Types';
 import { ProjectData } from '../../project-data';
 import { Router } from '@angular/router';
 import { forkJoin } from 'rxjs';
+import { Toast } from '../../toast';
 
 
 @Component({
@@ -41,6 +42,7 @@ export class Home implements OnInit {
   constructor(private router: Router) {}
 
   private readonly projectData = inject(ProjectData);
+  private readonly toast = inject(Toast);
 
   // private nextProjectNumber = 0;
 
@@ -69,14 +71,8 @@ export class Home implements OnInit {
   isSaving = signal(false);
   isUpdatingStatus = signal(false);
 
-  loadErrorMessage = signal<string | null>(null);
-  validationErrorMessage = signal<string | null>(null);
-  saveErrorMessage = signal<string | null>(null);
-  statusErrorMessage = signal<string | null>(null);
-
   ngOnInit(): void {
     this.isLoading.set(true);
-    this.loadErrorMessage.set(null);
 
     forkJoin({
       inProgress: this.projectData.getProjectsPageByStatus(1, 0),
@@ -95,7 +91,7 @@ export class Home implements OnInit {
         this.isLoading.set(false);
       },
       error: (error) => {
-        this.loadErrorMessage.set(`Failed to load projects: ${this.getErrorMessage(error)}`);
+        this.toast.error(`Failed to load projects: ${this.getErrorMessage(error)}`);
         this.isLoading.set(false);
         console.error("Failed to load projects: ", error);
       },
@@ -139,7 +135,7 @@ export class Home implements OnInit {
         this.isLoading.set(false);
       },
       error: (error) => {
-        this.loadErrorMessage.set(`Failed to load projects: ${this.getErrorMessage(error)}`);
+        this.toast.error(`Failed to load projects: ${this.getErrorMessage(error)}`);
         this.isLoading.set(false);
         console.error("Failed to load projects: ", error);
       }
@@ -156,13 +152,15 @@ export class Home implements OnInit {
   openCreateModal(): void {
     this.editingProjectId.set(null);
     this.draftProject = this.createEmptyProject();
-    this.validationErrorMessage.set(null);
-    this.saveErrorMessage.set(null);
     this.isCreateModalOpen.set(true);
   }
 
   openCreateWizard(): void {
     this.router.navigate(['/projects/create']);
+  }
+
+  openProjectDetails(projectId: string): void {
+    this.router.navigate([`/projects/details/${encodeURIComponent(projectId)}`]);
   }
 
   editProject(project: ProjectRecord): void {
@@ -171,20 +169,16 @@ export class Home implements OnInit {
       ...project,
       renewalDate: project.renewalDate ?? this.getToday(),
     };
-    this.validationErrorMessage.set(null);
-    this.saveErrorMessage.set(null);
     this.isCreateModalOpen.set(true);
   }
 
   saveProject(form: NgForm): void {
     if (form.invalid || !this.hasValidTextFields()) {
       form.control.markAllAsTouched();
-      this.validationErrorMessage.set('Please complete all required fields before saving.');
+      this.toast.error('Please complete all required fields before saving.');
       return;
     }
 
-    this.validationErrorMessage.set(null);
-    this.saveErrorMessage.set(null);
     this.isSaving.set(true);
     const editingProjectId = this.editingProjectId();
 
@@ -195,9 +189,10 @@ export class Home implements OnInit {
           this.projectRecords.update((projects) => projects.map((project) => project.projectId === editingProjectId ? updatedProject : project));
           this.isCreateModalOpen.set(false);
           this.isSaving.set(false);
+          this.toast.inform(`Updated project: ${editingProjectId}`);
         },
         error: (error) => {
-          this.saveErrorMessage.set(`Failed to update project: ${this.getErrorMessage(error)}`);
+          this.toast.error(`Failed to update project: ${this.getErrorMessage(error)}`);
           this.isSaving.set(false);
           console.error("Failed to update project: ", error);
         }
@@ -210,7 +205,7 @@ export class Home implements OnInit {
           this.isSaving.set(false);
         },
         error: (error) => {
-          this.saveErrorMessage.set(`Failed to create project: ${this.getErrorMessage(error)}`);
+          this.toast.error(`Failed to create project: ${this.getErrorMessage(error)}`);
           this.isSaving.set(false);
           console.error("Failed to create project: ", error);
         }
@@ -220,15 +215,15 @@ export class Home implements OnInit {
 
   changeProjectStatus(projectId: string, status: ProjectStatus): void {
     this.isUpdatingStatus.set(true);
-    this.statusErrorMessage.set(null);
 
     this.projectData.updateProjectStatus(projectId, status).subscribe({
       next: (updatedProject) => { 
         this.loadStatusPage(this.selectedStatus(), this.currentPage());
         this.isUpdatingStatus.set(false);
+        this.toast.inform(`Project status for ${projectId} updated`);
       },
       error: (error) => {
-        this.statusErrorMessage.set(`Failed to change status: ${this.getErrorMessage(error)}`);
+        this.toast.error(`Failed to change status: ${this.getErrorMessage(error)}`);
         this.isUpdatingStatus.set(false);
         console.error("Failed to change status: ", error);
       }

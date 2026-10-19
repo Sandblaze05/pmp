@@ -29,8 +29,6 @@ export class Create {
   readonly currentStep = signal(1);
   readonly totalSteps = 4;
   readonly isSaving = signal(false);
-  readonly validationErrorMessage = signal<string | null>(null);
-  readonly saveErrorMessage = signal<string | null>(null);
   readonly taskDialogOpen = signal(false);
   readonly effortDialogOpen = signal(false);
 
@@ -47,22 +45,18 @@ export class Create {
   nextStep(form: NgForm): void {
     if (!this.isCurrentStepValid(form)) {
       form.control.markAllAsTouched();
-      this.validationErrorMessage.set('Please complete all required fields before continuing.');
       return;
     }
 
-    this.validationErrorMessage.set(null);
     this.currentStep.update((step) => Math.min(step + 1, this.totalSteps + 1));
   }
 
   previousStep(): void {
-    this.validationErrorMessage.set(null);
     this.currentStep.update((step) => Math.max(step - 1, 1));
   }
 
   goToStep(step: number): void {
     if (step < this.currentStep()) {
-      this.validationErrorMessage.set(null);
       this.currentStep.set(step);
     }
   }
@@ -79,10 +73,13 @@ export class Create {
     this.taskDialogOpen.set(true);
   }
 
-  saveTask(): void {
+  saveTask(form: NgForm): void {
     const name = this.taskDraft.name.trim();
     const description = this.taskDraft.description.trim();
-    if (!name || !description) return;
+    if (!name || !description) {
+      form.control.markAllAsTouched();
+      return;
+    }
 
     if (this.editingTaskId === null) {
       this.tasks.push({ ...this.taskDraft, id: this.nextItemId++, name, description });
@@ -117,8 +114,11 @@ export class Create {
     this.effortDialogOpen.set(true);
   }
 
-  saveEffort(): void {
-    if (this.effortDraft.taskId === null || !this.effortDraft.person.trim() || Number(this.effortDraft.estimatedHours) <= 0) return;
+  saveEffort(form: NgForm): void {
+    if (this.effortDraft.taskId === null || !this.effortDraft.person.trim() || Number(this.effortDraft.estimatedHours) <= 0) {
+      form.control.markAllAsTouched();
+      return;
+    }
 
     const effort = { ...this.effortDraft, id: this.editingEffortId ?? this.nextItemId++, person: this.effortDraft.person.trim() };
     if (this.editingEffortId === null) {
@@ -150,12 +150,9 @@ export class Create {
   saveProject(form: NgForm): void {
     if (!this.isCurrentStepValid(form)) {
       form.control.markAllAsTouched();
-      this.validationErrorMessage.set('Please complete all required fields before creating the project.');
       return;
     }
 
-    this.validationErrorMessage.set(null);
-    this.saveErrorMessage.set(null);
     this.isSaving.set(true);
 
     const projectToSave: ProjectRecord = {
@@ -176,7 +173,7 @@ export class Create {
         void this.router.navigate(['/']);
       },
       error: (error: unknown) => {
-        this.saveErrorMessage.set(`Failed to create project: ${this.getErrorMessage(error)}`);
+        this.toast.error(`Failed to create project: ${this.getErrorMessage(error)}`);
         this.isSaving.set(false);
         console.error('Failed to create project:', error);
       },
@@ -184,7 +181,7 @@ export class Create {
   }
 
   cancel(): void {
-    this.toast.inform("Cancelled creation.");
+    this.toast.warn("Cancelled creation.");
     void this.router.navigate(['/']);
   }
 
@@ -216,6 +213,16 @@ export class Create {
     }
 
     return true;
+  }
+
+  isFieldInvalid(form: NgForm, fieldName: string): boolean {
+    const control = form.controls[fieldName];
+    return !!control?.touched && control.invalid;
+  }
+
+  isSectorInvalid(form: NgForm): boolean {
+    const control = form.controls['projectSector'];
+    return !!control?.touched && this.wizardDetails.projectSector === 'Default';
   }
 
   private createEmptyProject(): ProjectRecord {

@@ -21,38 +21,29 @@
 
         <form #projectForm="ngForm" (ngSubmit)="currentStep() === 5 ? saveProject(projectForm) : nextStep(projectForm)"
             class="mt-6" novalidate>
-            @if (validationErrorMessage()) {
-            <div role="alert" class="mb-4 rounded border border-red-400/60 bg-red-950/40 px-4 py-3 text-red-100">
-                {{ validationErrorMessage() }}
-            </div>
-            }
-            @if (saveErrorMessage()) {
-            <div role="alert" class="mb-4 rounded border border-red-400/60 bg-red-950/40 px-4 py-3 text-red-100">
-                {{ saveErrorMessage() }}
-            </div>
-            }
-
             @if (currentStep() === 1) {
             <section>
                 <h1 class="mb-4 text-xl font-bold">Client Details</h1>
                 <div class="grid gap-4 md:grid-cols-2">
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Customer name *</span>
-                        <input required name="customerName" [(ngModel)]="draftProject.custName" class="wizard-input" />
+                        <input required name="customerName" [(ngModel)]="draftProject.custName" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'customerName')" />
+                        @if (isFieldInvalid(projectForm, 'customerName')) { <span class="wizard-field-error">Customer name is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Customer address *</span>
-                        <input required name="customerAddress" [(ngModel)]="wizardDetails.customerAddress" class="wizard-input" />
+                        <input required name="customerAddress" [(ngModel)]="wizardDetails.customerAddress" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'customerAddress')" />
+                        @if (isFieldInvalid(projectForm, 'customerAddress')) { <span class="wizard-field-error">Customer address is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Project sector *</span>
-                        <!-- <input required name="projectSector" [(ngModel)]="wizardDetails.projectSector" class="wizard-input" /> -->
-                        <select name="projectSector" [(ngModel)]="wizardDetails.projectSector" class="wizard-input">
+                        <select required name="projectSector" [(ngModel)]="wizardDetails.projectSector" class="wizard-input" [class.wizard-input-invalid]="isSectorInvalid(projectForm)">
                             <option value="Default" disabled>Select an Option</option>
                             @for (sector of sectors; track sector) {
                                 <option [ngValue]="sector">{{ sector }}</option>
                             }
                         </select>
+                        @if (isSectorInvalid(projectForm)) { <span class="wizard-field-error">Project sector is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Client contact name</span>
@@ -80,63 +71,76 @@
                 <div class="grid gap-4 md:grid-cols-2">
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Project name *</span>
-                        <input required name="projectName" [(ngModel)]="draftProject.projectName" class="wizard-input" />
+                        <input required name="projectName" [(ngModel)]="draftProject.projectName" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'projectName')" />
+                        @if (isFieldInvalid(projectForm, 'projectName')) { <span class="wizard-field-error">Project name is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Project domain *</span>
-                        <input required name="domain" [(ngModel)]="wizardDetails.domain" class="wizard-input" />
+                        <input required name="domain" [(ngModel)]="wizardDetails.domain" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'domain')" />
+                        @if (isFieldInvalid(projectForm, 'domain')) { <span class="wizard-field-error">Project domain is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1 md:col-span-2">
                         <span class="text-sm font-semibold">Project brief description *</span>
-                        <textarea required name="projectDescription" [(ngModel)]="wizardDetails.projectDescription" class="wizard-input"></textarea>
+                        <textarea required name="projectDescription" [(ngModel)]="wizardDetails.projectDescription" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'projectDescription')"></textarea>
+                        @if (isFieldInvalid(projectForm, 'projectDescription')) { <span class="wizard-field-error">Project description is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1 md:col-span-2">
                         <span class="text-sm font-semibold">Project brief scope *</span>
-                        <textarea required name="scope" [(ngModel)]="wizardDetails.scope" class="wizard-input"></textarea>
+                        <textarea required name="scope" [(ngModel)]="wizardDetails.scope" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'scope')"></textarea>
+                        @if (isFieldInvalid(projectForm, 'scope')) { <span class="wizard-field-error">Project scope is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Project managed by *</span>
-                        <input required name="managedBy" [(ngModel)]="wizardDetails.managedBy" class="wizard-input" />
+                        <input required name="managedBy" [(ngModel)]="wizardDetails.managedBy" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'managedBy')" />
+                        @if (isFieldInvalid(projectForm, 'managedBy')) { <span class="wizard-field-error">Managed by is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Project type *</span>
-                        <input required name="type" [(ngModel)]="wizardDetails.type" class="wizard-input" />
+                        <input required name="type" [(ngModel)]="wizardDetails.type" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'type')" />
+                        @if (isFieldInvalid(projectForm, 'type')) { <span class="wizard-field-error">Project type is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Total value</span>
                         <input type="number" min="0" name="totalValue" [(ngModel)]="wizardDetails.totalValue" class="wizard-input" />
                     </label>
                     <label class="flex flex-col gap-1">
-                        <span class="text-sm font-semibold">Methodology</span>
-                        <input required name="methodology" [(ngModel)]="wizardDetails.methodology" class="wizard-input" />
+                        <span class="text-sm font-semibold">Methodology *</span>
+                        <input required name="methodology" [(ngModel)]="wizardDetails.methodology" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'methodology')" />
+                        @if (isFieldInvalid(projectForm, 'methodology')) { <span class="wizard-field-error">Methodology is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Technology</span>
                         <input name="technology" [(ngModel)]="wizardDetails.technology" class="wizard-input" />
                     </label>
                     <label class="flex flex-col gap-1">
-                        <span class="text-sm font-semibold">Start date</span>
-                        <input required type="date" name="projectStartDate" [(ngModel)]="draftProject.projectStartDate" class="wizard-input" />
+                        <span class="text-sm font-semibold">Start date *</span>
+                        <input required type="date" name="projectStartDate" [(ngModel)]="draftProject.projectStartDate" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'projectStartDate')" />
+                        @if (isFieldInvalid(projectForm, 'projectStartDate')) { <span class="wizard-field-error">Start date is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
-                        <span class="text-sm font-semibold">Expected end date</span>
-                        <input required type="date" name="projectEndDate" [(ngModel)]="draftProject.projectEndDate" class="wizard-input" />
+                        <span class="text-sm font-semibold">Expected end date *</span>
+                        <input required type="date" name="projectEndDate" [(ngModel)]="draftProject.projectEndDate" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'projectEndDate')" />
+                        @if (isFieldInvalid(projectForm, 'projectEndDate')) { <span class="wizard-field-error">Expected end date is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
-                        <span class="text-sm font-semibold">Project issue date</span>
-                        <input required type="date" name="projectIssueDate" [(ngModel)]="draftProject.projectIssueDate" class="wizard-input" />
+                        <span class="text-sm font-semibold">Project issue date *</span>
+                        <input required type="date" name="projectIssueDate" [(ngModel)]="draftProject.projectIssueDate" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'projectIssueDate')" />
+                        @if (isFieldInvalid(projectForm, 'projectIssueDate')) { <span class="wizard-field-error">Project issue date is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Project estimated hours *</span>
-                        <input required type="number" min="0" name="estimatedHours" [(ngModel)]="draftProject.estimatedHours" class="wizard-input" />
+                        <input required type="number" min="0" name="estimatedHours" [(ngModel)]="draftProject.estimatedHours" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'estimatedHours')" />
+                        @if (isFieldInvalid(projectForm, 'estimatedHours')) { <span class="wizard-field-error">Estimated hours must be zero or greater.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
-                        <span class="text-sm font-semibold">Onshore manager</span>
-                        <input required name="onshoreManager" [(ngModel)]="draftProject.onshoreManagerName" class="wizard-input" />
+                        <span class="text-sm font-semibold">Onshore manager *</span>
+                        <input required name="onshoreManager" [(ngModel)]="draftProject.onshoreManagerName" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'onshoreManager')" />
+                        @if (isFieldInvalid(projectForm, 'onshoreManager')) { <span class="wizard-field-error">Onshore manager is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
-                        <span class="text-sm font-semibold">Offshore manager</span>
-                        <input required name="offshoreManager" [(ngModel)]="draftProject.offshoreManagerName" class="wizard-input" />
+                        <span class="text-sm font-semibold">Offshore manager *</span>
+                        <input required name="offshoreManager" [(ngModel)]="draftProject.offshoreManagerName" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'offshoreManager')" />
+                        @if (isFieldInvalid(projectForm, 'offshoreManager')) { <span class="wizard-field-error">Offshore manager is required.</span> }
                     </label>
                     <label class="flex flex-col gap-1">
                         <span class="text-sm font-semibold">Project lead</span>
@@ -147,8 +151,9 @@
                         <input name="stakeholders" [(ngModel)]="wizardDetails.stakeholders" class="wizard-input" />
                     </label>
                     <label class="flex flex-col gap-1">
-                        <span class="text-sm font-semibold">Account manager</span>
-                        <input required name="accountManager" [(ngModel)]="draftProject.accountManagerName" class="wizard-input" />
+                        <span class="text-sm font-semibold">Account manager *</span>
+                        <input required name="accountManager" [(ngModel)]="draftProject.accountManagerName" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(projectForm, 'accountManager')" />
+                        @if (isFieldInvalid(projectForm, 'accountManager')) { <span class="wizard-field-error">Account manager is required.</span> }
                     </label>
                 </div>
             </section>
@@ -263,10 +268,10 @@
 @if (taskDialogOpen()) {
 <div class="wizard-dialog-backdrop" (click)="cancelTaskDialog()">
     <section role="dialog" aria-modal="true" aria-labelledby="task-dialog-title" class="wizard-dialog" (click)="$event.stopPropagation()">
-        <form #taskForm="ngForm" (ngSubmit)="saveTask()">
+        <form #taskForm="ngForm" (ngSubmit)="saveTask(taskForm)">
         <h2 id="task-dialog-title" class="mb-4 text-lg font-bold">{{ editingTaskId === null ? 'Add task' : 'Edit task' }}</h2>
-        <label class="mb-4 flex flex-col gap-1"><span class="text-sm font-semibold">Task name *</span><input required name="taskDialogName" [(ngModel)]="taskDraft.name" class="wizard-input" /></label>
-        <label class="mb-5 flex flex-col gap-1"><span class="text-sm font-semibold">Description *</span><textarea required name="taskDialogDescription" [(ngModel)]="taskDraft.description" class="wizard-input"></textarea></label>
+        <label class="mb-4 flex flex-col gap-1"><span class="text-sm font-semibold">Task name *</span><input required name="taskDialogName" [(ngModel)]="taskDraft.name" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(taskForm, 'taskDialogName')" />@if (isFieldInvalid(taskForm, 'taskDialogName')) { <span class="wizard-field-error">Task name is required.</span> }</label>
+        <label class="mb-5 flex flex-col gap-1"><span class="text-sm font-semibold">Description *</span><textarea required name="taskDialogDescription" [(ngModel)]="taskDraft.description" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(taskForm, 'taskDialogDescription')"></textarea>@if (isFieldInvalid(taskForm, 'taskDialogDescription')) { <span class="wizard-field-error">Description is required.</span> }</label>
         <div class="flex justify-end gap-2"><button type="button" (click)="cancelTaskDialog()" class="wizard-secondary-button">Cancel</button><button type="submit" class="wizard-primary-button">Save task</button></div>
         </form>
     </section>
@@ -276,7 +281,7 @@
 @if (effortDialogOpen()) {
 <div class="wizard-dialog-backdrop" (click)="cancelEffortDialog()">
     <section role="dialog" aria-modal="true" aria-labelledby="effort-dialog-title" class="wizard-dialog" (click)="$event.stopPropagation()">
-        <form #effortForm="ngForm" (ngSubmit)="saveEffort()">
+        <form #effortForm="ngForm" (ngSubmit)="saveEffort(effortForm)">
             <h2 id="effort-dialog-title" class="mb-4 text-lg font-bold">
                 {{ editingEffortId === null ? 'Add estimated effort' : 'Edit estimated effort' }}
             </h2>
@@ -284,7 +289,7 @@
                 <span class="text-sm font-semibold">
                 Task *
                 </span>
-                <select required name="effortDialogTask" [(ngModel)]="effortDraft.taskId" class="wizard-input">
+                <select required name="effortDialogTask" [(ngModel)]="effortDraft.taskId" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(effortForm, 'effortDialogTask')">
                     <option [ngValue]="null">Select a task</option>
                     @for (task of tasks; track task.id) {
                         <option [ngValue]="task.id">
@@ -292,18 +297,21 @@
                         </option>
                     }
                 </select>
+                @if (isFieldInvalid(effortForm, 'effortDialogTask')) { <span class="wizard-field-error">Task is required.</span> }
             </label>
             <label class="mb-4 flex flex-col gap-1">
                 <span class="text-sm font-semibold">
                     Person *
                 </span>
-                <input required name="effortDialogPerson" [(ngModel)]="effortDraft.person" class="wizard-input" />
+                <input required name="effortDialogPerson" [(ngModel)]="effortDraft.person" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(effortForm, 'effortDialogPerson')" />
+                @if (isFieldInvalid(effortForm, 'effortDialogPerson')) { <span class="wizard-field-error">Person is required.</span> }
             </label>
             <label class="mb-5 flex flex-col gap-1">
                 <span class="text-sm font-semibold">
                     Estimated hours *
                 </span>
-                <input required type="number" min="1" name="effortDialogHours" [(ngModel)]="effortDraft.estimatedHours" class="wizard-input" />
+                <input required type="number" min="1" name="effortDialogHours" [(ngModel)]="effortDraft.estimatedHours" class="wizard-input" [class.wizard-input-invalid]="isFieldInvalid(effortForm, 'effortDialogHours')" />
+                @if (isFieldInvalid(effortForm, 'effortDialogHours')) { <span class="wizard-field-error">Estimated hours must be greater than zero.</span> }
             </label>
             <div class="flex justify-end gap-2">
                 <button type="button" (click)="cancelEffortDialog()" class="wizard-secondary-button">Cancel</button>
