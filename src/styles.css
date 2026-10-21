@@ -6,3 +6,8 @@
 @theme {
     --default-font-family: "Poppins", sans-serif;
 }
+
+::selection {
+    color: #171717;
+    background: #fefefe;
+}

@@ -99,7 +99,7 @@
             } @else {
                 @for (project of pagedProjects(); track project.projectId) {
                 <tr class="transition-colors hover:bg-[#fefefe]/4">
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums font-mono text-xs"><span title="More Details" class="hover:text-blue-300 hover:underline cursor-pointer" (click)="openProjectDetails(project.projectId)">{{ project.projectId }}</span></td>
+                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums font-mono text-xs"><span title="More Details" class="hover:text-blue-300 hover:underline cursor-pointer transition-colors" (click)="openProjectDetails(project.projectId)">{{ project.projectId }}</span></td>
                     <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.custName }}</td>
                     <td class="whitespace-nowrap px-4 py-3.5 tabular-nums font-medium">{{ project.projectName }}</td>
                     <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.projectStartDate | date:'dd-MM-yyyy' }}</td>
@@ -209,7 +209,7 @@
         (click)="$event.stopPropagation()">
         <div class="flex items-center justify-between">
             <h2 id="project-dialog-title" class="text-xl font-semibold tracking-tight">
-                {{ editingProjectId() ? 'EditProject' : 'Create Project' }}</h2>
+                {{ editingProjectId() ? 'Edit Project' : 'Create Project' }}</h2>
             <button type="button"
                 class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 p-1.5 text-sm border-transparent text-[#fefefe]/70 hover:bg-[#fefefe] hover:text-[#171717] disabled:hover:bg-transparent disabled:hover:text-inherit"
                 aria-label="Close modal" (click)="isCreateModalOpen.set(false)">
@@ -254,45 +254,52 @@
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
                         [attr.aria-invalid]="projectForm.controls['projectStartDate']?.touched && !draftProject.projectStartDate" />
                     @if (projectForm.controls['projectStartDate']?.touched && !draftProject.projectStartDate) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Project start
-                        date is required.</span>
+                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">
+                        Project start date is required.
+                    </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">End date <span
-                            aria-hidden="true">*</span></span>
+                    <span class="text-xs font-medium text-[#fefefe]/75">
+                        End date <span aria-hidden="true">*</span>
+                    </span>
                     <input required type="date" name="endDate" [(ngModel)]="draftProject.projectEndDate"
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
                         [attr.aria-invalid]="projectForm.controls['endDate']?.touched && !draftProject.projectEndDate" />
                     @if (projectForm.controls['endDate']?.touched && !draftProject.projectEndDate) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">End date is
-                        required.</span>
+                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">
+                        End date is required.
+                    </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">Issue date <span
-                            aria-hidden="true">*</span></span>
+                    <span class="text-xs font-medium text-[#fefefe]/75">
+                        Issue date <span aria-hidden="true">*</span>
+                    </span>
                     <input required type="date" name="issueDate" [(ngModel)]="draftProject.projectIssueDate"
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
                         [attr.aria-invalid]="projectForm.controls['issueDate']?.touched && !draftProject.projectIssueDate" />
                     @if (projectForm.controls['issueDate']?.touched && !draftProject.projectIssueDate) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Issue date is
-                        required.</span>
+                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">
+                        Issue date is required.
+                    </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">Revised end date <span
-                            class="font-normal text-[#fefefe]/40">(optional)</span></span>
+                    <span class="text-xs font-medium text-[#fefefe]/75">
+                        Revised end date <span class="font-normal text-[#fefefe]/40">(optional)</span>
+                    </span>
                     <input type="date" name="revisedEndDate" [(ngModel)]="draftProject.revisedEndDate"
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark" />
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">Renewal date <span
-                            class="font-normal text-[#fefefe]/40">(optional)</span></span>
+                    <span class="text-xs font-medium text-[#fefefe]/75">
+                        Renewal date <span class="font-normal text-[#fefefe]/40">(optional)</span>
+                    </span>
                     <input type="date" name="renewalDate" [(ngModel)]="draftProject.renewalDate"
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark" />
                 </label>
@@ -303,22 +310,24 @@
                     Effort</legend>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">Estimated hours <span
-                            aria-hidden="true">*</span></span>
+                    <span class="text-xs font-medium text-[#fefefe]/75">
+                        Estimated hours <span aria-hidden="true">*</span>
+                    </span>
                     <input required type="number" name="estimatedHours" [(ngModel)]="draftProject.estimatedHours"
                         min="0"
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark tabular-nums"
                         [attr.aria-invalid]="projectForm.controls['estimatedHours']?.touched && projectForm.controls['estimatedHours']?.invalid" />
-                    @if (projectForm.controls['estimatedHours']?.touched &&
-                    projectForm.controls['estimatedHours']?.invalid) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Estimated
-                        hours is required.</span>
+                    @if (projectForm.controls['estimatedHours']?.touched && projectForm.controls['estimatedHours']?.invalid) {
+                        <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">
+                            Estimated hours is required.
+                        </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">Actual hours <span
-                            class="font-normal text-[#fefefe]/40">(optional)</span></span>
+                    <span class="text-xs font-medium text-[#fefefe]/75">
+                        Actual hours <span class="font-normal text-[#fefefe]/40">(optional)</span>
+                    </span>
                     <input type="number" name="actualHours" [(ngModel)]="draftProject.actualHours" min="0"
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark tabular-nums" />
                 </label>
@@ -326,41 +335,48 @@
 
             <fieldset class="grid gap-x-4 gap-y-5 md:col-span-2 md:grid-cols-2">
                 <legend class="mb-3 border-t border-[#fefefe]/10 pt-5 text-sm font-semibold md:col-span-2 md:w-full">
-                    People</legend>
+                    People
+                </legend>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">Onshore manager <span
-                            aria-hidden="true">*</span></span>
+                    <span class="text-xs font-medium text-[#fefefe]/75">
+                        Onshore manager <span aria-hidden="true">*</span>
+                    </span>
                     <input required type="text" name="onshoreManager" [(ngModel)]="draftProject.onshoreManagerName"
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
                         [attr.aria-invalid]="projectForm.controls['onshoreManager']?.touched && !draftProject.onshoreManagerName.trim()" />
                     @if (projectForm.controls['onshoreManager']?.touched && !draftProject.onshoreManagerName.trim()) {
                     <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Onshore
-                        manager is required.</span>
+                        manager is required.
+                    </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">Offshore manager <span
-                            aria-hidden="true">*</span></span>
+                    <span class="text-xs font-medium text-[#fefefe]/75">
+                        Offshore manager <span aria-hidden="true">*</span>
+                    </span>
                     <input required type="text" name="offshoreManager" [(ngModel)]="draftProject.offshoreManagerName"
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
                         [attr.aria-invalid]="projectForm.controls['offshoreManager']?.touched && !draftProject.offshoreManagerName.trim()" />
                     @if (projectForm.controls['offshoreManager']?.touched && !draftProject.offshoreManagerName.trim()) {
                     <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Offshore
-                        manager is required.</span>
+                        manager is required.
+                    </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">Account manager <span
-                            aria-hidden="true">*</span></span>
+                    <span class="text-xs font-medium text-[#fefefe]/75">
+                        Account manager <span aria-hidden="true">*</span>
+                    </span>
                     <input required type="text" name="accountManager" [(ngModel)]="draftProject.accountManagerName"
                         class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
                         [attr.aria-invalid]="projectForm.controls['accountManager']?.touched && !draftProject.accountManagerName.trim()" />
                     @if (projectForm.controls['accountManager']?.touched && !draftProject.accountManagerName.trim()) {
                     <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Account
-                        manager is required.</span>
+                        manager is required.
+                    </span>
                     }
                 </label>
             </fieldset>
@@ -369,9 +385,12 @@
                 class="mt-2 flex flex-col-reverse gap-3 border-t border-[#fefefe]/10 pt-5 sm:flex-row sm:justify-end md:col-span-2">
                 <button type="button"
                     class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-5 py-2 text-sm border-[#fefefe]/30 hover:bg-[#fefefe] hover:text-[#171717] disabled:hover:bg-transparent disabled:hover:text-inherit"
-                    (click)="isCreateModalOpen.set(false)">Cancel</button>
+                    (click)="isCreateModalOpen.set(false)">
+                    Cancel
+                </button>
                 <button type="submit" [disabled]="isSaving()"
-                    class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-5 py-2 text-sm border-[#fefefe] bg-[#fefefe] text-[#171717] hover:bg-[#fefefe]/85">
+                    class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-5 py-2 text-sm border-[#fefefe] bg-[#fefefe] text-[#171717] hover:bg-[#fefefe]/85"
+                >
                     @if (isSaving()) {
                     Saving...
                     } @else {
