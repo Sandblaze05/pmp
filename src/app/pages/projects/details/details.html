@@ -1,1 +1,176 @@
-<p>details works!</p>
+<div class="mx-4 mt-6 sm:mx-6 sm:mt-10 lg:mx-10">
+  <div class="mx-auto max-w-6xl">
+    @if (projectState().loading) {
+      <span class="text-sm text-[#fefefe]/60 absolute top-1/2 left-1/2 translate-[-50%]">
+        <svg lucideLoaderCircle class="animate-spin"></svg>
+      </span>
+    } @else if (projectState().error) {
+      <p class="text-sm text-red-300">Could not load this project.</p>
+    } @else if (projectState().project; as project) {
+      <div class="grid grid-cols-1 gap-3 text-[#fefefe] md:grid-cols-6 lg:grid-cols-12 lg:gap-4">
+
+        <section class="flex flex-col justify-between gap-6 rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-6 lg:col-span-8 lg:p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <span class="inline-flex items-center gap-1 text-[#fefefe]/60">
+              <svg lucideUserRound size="20"></svg>
+              <p class="text-sm">{{ project.custName }} · {{ project.projectId }}</p>
+            </span>
+            <span class="inline-flex items-center gap-2 rounded-full border border-[#fefefe]/20 px-3 py-1 text-sm">
+              @if (project.status === 0) {
+                <span class="h-2 w-2 rounded-full bg-sky-300"></span> In progress
+              } @else if (project.status === 1) {
+                <span class="h-2 w-2 rounded-full bg-amber-300"></span> Pending approval
+              } @else if (project.status === 3) {
+                <span class="h-2 w-2 rounded-full bg-emerald-300"></span> Completed
+              }
+            </span>
+          </div>
+          <h1 class="text-3xl font-bold leading-tight lg:text-4xl">{{ project.projectName }}</h1>
+        </section>
+
+        <section class="flex flex-col justify-between gap-6 rounded-2xl bg-[#fefefe] p-5 text-[#171717] md:col-span-3 lg:col-span-4 lg:p-6">
+          <span class="inline-flex items-center gap-1 text-[#171717]/60">
+            <svg lucideClock size="20"></svg>
+            <h2 class="text-sm font-medium">Hours</h2>
+          </span>
+          <div>
+            <p class="text-4xl font-bold">
+              {{ project.actualHours ?? '—' }}
+              <span class="text-lg font-medium text-[#171717]/60">/ {{ project.estimatedHours }}</span>
+            </p>
+            <p class="mt-1 text-sm text-[#171717]/60">Actual vs estimated</p>
+            <div class="mt-4 h-2 overflow-hidden rounded-full bg-[#171717]/15">
+              <div
+                class="h-full rounded-full"
+                [class.bg-[#171717]]="(project.actualHours ?? 0) <= project.estimatedHours"
+                [class.bg-red-600]="(project.actualHours ?? 0) > project.estimatedHours"
+                [style.width.%]="project.estimatedHours ? ((project.actualHours ?? 0) / project.estimatedHours) * 100 : 0"
+              ></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-6 lg:col-span-8 lg:p-6">
+          <span class="mb-4 inline-flex items-center gap-2">
+            <svg lucideCalendar size="20"></svg>
+            <h2 class="text-lg font-semibold">Dates</h2>
+          </span>
+          <dl class="grid grid-cols-2 gap-x-4 gap-y-5 sm:grid-cols-3">
+            <div><dt class="text-sm text-[#fefefe]/60">Issued</dt><dd>{{ project.projectIssueDate || '—' }}</dd></div>
+            <div><dt class="text-sm text-[#fefefe]/60">Started</dt><dd>{{ project.projectStartDate || '—' }}</dd></div>
+            <div><dt class="text-sm text-[#fefefe]/60">Ends</dt><dd>{{ project.projectEndDate || '—' }}</dd></div>
+            <div><dt class="text-sm text-[#fefefe]/60">Revised end</dt><dd>{{ project.revisedEndDate || '—' }}</dd></div>
+            <div><dt class="text-sm text-[#fefefe]/60">Renewal</dt><dd>{{ project.renewalDate || '—' }}</dd></div>
+          </dl>
+        </section>
+
+        <section class="rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-3 lg:col-span-4 lg:p-6">
+          <span class="mb-4 inline-flex items-center gap-2">
+            <svg lucideUserCog size="20"></svg>
+            <h2 class="text-lg font-semibold">Managers</h2>
+          </span>
+          <dl class="space-y-4">
+            <div><dt class="text-sm text-[#fefefe]/60">Onshore</dt><dd>{{ project.onshoreManagerName || '—' }}</dd></div>
+            <div><dt class="text-sm text-[#fefefe]/60">Offshore</dt><dd>{{ project.offshoreManagerName || '—' }}</dd></div>
+            <div><dt class="text-sm text-[#fefefe]/60">Account</dt><dd>{{ project.accountManagerName || '—' }}</dd></div>
+          </dl>
+        </section>
+
+        @if (project.wizardDetails; as details) {
+          <section class="rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-3 lg:col-span-6 lg:p-6">
+            <span class="inline-flex items-center gap-2 mb-4">
+              <svg lucideFolder size="20"></svg>
+              <h2 class="text-lg font-semibold">About the project</h2>
+            </span>
+            <dl class="grid grid-cols-2 gap-x-4 gap-y-5">
+              <div><dt class="text-sm text-[#fefefe]/60">Sector</dt><dd>{{ details.projectSector || '—' }}</dd></div>
+              <div><dt class="text-sm text-[#fefefe]/60">Domain / type</dt><dd>{{ details.domain || '—' }} / {{ details.type || '—' }}</dd></div>
+              <div><dt class="text-sm text-[#fefefe]/60">Methodology</dt><dd>{{ details.methodology || '—' }}</dd></div>
+              <div><dt class="text-sm text-[#fefefe]/60">Technology</dt><dd>{{ details.technology || '—' }}</dd></div>
+              <div><dt class="text-sm text-[#fefefe]/60">Lead</dt><dd>{{ details.lead || '—' }}</dd></div>
+              <div><dt class="text-sm text-[#fefefe]/60">Managed by</dt><dd>{{ details.managedBy || '—' }}</dd></div>
+              <div><dt class="text-sm text-[#fefefe]/60">Total value</dt><dd>{{ details.totalValue ?? '—' }}</dd></div>
+            </dl>
+          </section>
+
+          <section class="rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-3 lg:col-span-6 lg:p-6">
+            <span class="mb-4 inline-flex items-center gap-2">
+              <svg lucideHandshake size="20"></svg>
+              <h2 class="text-lg font-semibold">Client</h2>
+            </span>
+            <dl class="grid grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
+              <div><dt class="text-sm text-[#fefefe]/60">Contact</dt><dd>{{ details.clientContactName || '—' }}</dd></div>
+              <div><dt class="text-sm text-[#fefefe]/60">Contact email</dt><dd class="break-all">{{ details.clientEmail || '—' }}</dd></div>
+              <div><dt class="text-sm text-[#fefefe]/60">Project manager</dt><dd>{{ details.clientPmName || '—' }}</dd></div>
+              <div><dt class="text-sm text-[#fefefe]/60">Manager email</dt><dd class="break-all">{{ details.clientPmEmail || '—' }}</dd></div>
+              <div class="sm:col-span-2"><dt class="text-sm text-[#fefefe]/60">Address</dt><dd>{{ details.customerAddress || '—' }}</dd></div>
+            </dl>
+          </section>
+
+          <section class="rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-6 lg:col-span-6 lg:p-6">
+            <span class="mb-3 inline-flex items-center gap-2">
+              <svg lucideSquareDashedText size="20"></svg>
+              <h2 class="text-lg font-semibold">Description</h2>
+            </span>
+            <p class="text-[#fefefe]/80">{{ details.projectDescription || '—' }}</p>
+          </section>
+
+          <section class="rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-3 lg:col-span-3 lg:p-6">
+            <span class="inline-flex items-center gap-2 mb-3">
+              <svg lucideSearchCheck size="20"></svg>
+              <h2 class="text-lg font-semibold">Scope</h2>
+            </span>
+            <p class="text-[#fefefe]/80">{{ details.scope || '—' }}</p>
+          </section>
+
+          <section class="rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-3 lg:col-span-3 lg:p-6">
+            <span class="mb-3 inline-flex items-center gap-2">
+              <svg lucideUserGroup size="20"></svg>
+              <h2 class="text-lg font-semibold">Stakeholders</h2>
+            </span>
+            <p class="text-[#fefefe]/80">{{ details.stakeholders || '—' }}</p>
+          </section>
+        }
+
+        <section class="rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-6 lg:col-span-7 lg:p-6">
+          <span class="inline-flex items-center mb-4 gap-2">
+            <svg lucideListChecks size="20"></svg>
+            <h2 class="text-lg font-semibold">Tasks</h2>
+          </span>
+          <div class="space-y-2">
+            @for (task of project.tasks ?? []; track $index) {
+              <article class="rounded-xl bg-[#fefefe]/5 px-4 py-3">
+                <h3 class="font-medium">{{ task.name }}</h3>
+                <p class="text-sm text-[#fefefe]/70">{{ task.description }}</p>
+              </article>
+            } @empty {
+              <p class="text-sm text-[#fefefe]/60">No tasks added.</p>
+            }
+          </div>
+        </section>
+
+        <section class="rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 md:col-span-6 lg:col-span-5 lg:p-6">
+          <span class="mb-4 inline-flex items-center gap-2">
+            <svg lucideBicepsFlexed size="20"></svg>
+            <h2 class="text-lg font-semibold">Estimated efforts</h2>
+          </span>
+          <div class="space-y-2">
+            @for (effort of project.efforts ?? []; track $index) {
+              <div class="flex items-center justify-between gap-3 rounded-xl bg-[#fefefe]/5 px-4 py-3">
+                <div class="min-w-0">
+                  <p class="truncate font-medium">{{ effort.person }}</p>
+                  <p class="truncate text-sm text-[#fefefe]/70">{{ effort.taskName }}</p>
+                </div>
+                <p class="shrink-0 text-sm font-medium">{{ effort.estimatedHours }} hours</p>
+              </div>
+            } @empty {
+              <p class="text-sm text-[#fefefe]/60">No estimated efforts added.</p>
+            }
+          </div>
+        </section>
+      </div>
+    } @else {
+      <p class="text-sm text-[#fefefe]/60">Project not found.</p>
+    }
+  </div>
+</div>
