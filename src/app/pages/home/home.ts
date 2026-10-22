@@ -11,6 +11,7 @@ import {
   LucidePencil,
   LucidePlay,
   LucidePlus,
+  LucideSearch,
   LucideX,
 } from '@lucide/angular';
 import { ProjectStatus, ProjectRecord } from '../../types/Types';
@@ -32,21 +33,22 @@ import { Toast } from '../../toast';
     LucidePlay,
     LucideCheck,
     LucidePencil,
-    DatePipe
+    DatePipe,
+    LucideSearch
   ],
   selector: 'app-home',
   styleUrl: './home.css',
   templateUrl: './home.html',
 })
 export class Home implements OnInit {
-  constructor(private router: Router) {}
-
+  
+  private router = inject(Router);
   private readonly projectData = inject(ProjectData);
   private readonly toast = inject(Toast);
 
   // private nextProjectNumber = 0;
 
-  selectedStatus = signal<ProjectStatus>(1);
+  selectedStatus = signal<ProjectStatus | null>(null);
   readonly pageSize = 10;
   currentPage = signal(1);
   private readonly statusCounts = signal<Record<ProjectStatus, number>>({ 0: 0, 1: 0, 3: 0 });
@@ -55,14 +57,19 @@ export class Home implements OnInit {
   inProgress = computed(() => this.statusCounts()[0]);
   newProjects = computed(() => this.statusCounts()[1]);
   completed = computed(() => this.statusCounts()[3]);
+  allProjects = computed(() => this.inProgress() + this.newProjects() + this.completed());
 
   isCreateModalOpen = signal<boolean>(false);
 
   projectRecords = signal<ProjectRecord[]>([]);
 
-  totalPages = computed(() => Math.max(Math.ceil(this.statusCounts()[this.selectedStatus()] / this.pageSize), 1));
+  totalPages = computed(() => {
+    const status = this.selectedStatus();
+    const count = status === null ? this.allProjects() : this.statusCounts()[status];
+    return Math.max(Math.ceil(count / this.pageSize), 1);
+  });
   displayedPage = computed(() => this.currentPage());
-  pagedProjects = computed(() => this.projectRecords());
+  pagedProjects = computed(() => this.filteredProjects());
 
   draftProject: ProjectRecord = this.createEmptyProject();
   editingProjectId = signal<string | null>(null);
@@ -70,6 +77,8 @@ export class Home implements OnInit {
   isLoading = signal(true);
   isSaving = signal(false);
   isUpdatingStatus = signal(false);
+
+  searchQuery = signal('');
 
   ngOnInit(): void {
     this.isLoading.set(true);
@@ -98,7 +107,25 @@ export class Home implements OnInit {
     });
   }
 
-  selectStatus(status: ProjectStatus): void {
+  filteredProjects = computed(() => {
+    const query = this.searchQuery().trim().toLowerCase();
+    const projects = this.projectRecords();
+
+    if (!query) {
+      return projects;
+    }
+
+    return projects.filter(project => [
+      project.projectId,
+      project.projectName,
+      project.custName,
+      project.onshoreManagerName,
+      project.offshoreManagerName,
+      project.accountManagerName,
+    ].some(value => value?.toLowerCase().includes(query)));
+  });
+
+  selectStatus(status: ProjectStatus | null): void {
     this.selectedStatus.set(status);
     this.currentPage.set(1);
     this.loadStatusPage(status, 1, true);
@@ -120,18 +147,20 @@ export class Home implements OnInit {
     }
   }
 
-  private loadStatusPage(status: ProjectStatus, page: number, showLoading = false): void {
+  private loadStatusPage(status: ProjectStatus | null, page: number, showLoading = false): void {
     if (showLoading) {
       this.isLoading.set(true);
     }
 
-    this.projectData.getProjectsPageByStatus(page, status).subscribe({
+    this.projectData.getProjectsPageByStatus(page, status ?? undefined).subscribe({
       next: (result) => {
         if (status === this.selectedStatus()) {
           this.projectRecords.set(result.projects);
           this.hasNextPage.set(result.hasNextPage);
         }
-        this.statusCounts.update((counts) => ({ ...counts, [status]: result.totalCount }));
+        if (status !== null) {
+          this.statusCounts.update((counts) => ({ ...counts, [status]: result.totalCount }));
+        }
         this.isLoading.set(false);
       },
       error: (error) => {

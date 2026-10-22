@@ -8,6 +8,12 @@
             <div role="group" aria-label="Filter by status" class="flex flex-wrap gap-1.5">
                 <button type="button"
                     class="inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe]"
+                    [class]="selectedStatus() === null ? 'border-[#fefefe] bg-[#fefefe] text-[#171717]' : 'border-transparent text-[#fefefe]/70 hover:border-[#fefefe]/30 hover:text-[#fefefe]'"
+                    [attr.aria-pressed]="selectedStatus() === null" (click)="selectStatus(null)">
+                    All Projects <span class="text-xs tabular-nums opacity-60">{{ allProjects() }}</span>
+                </button>
+                <button type="button"
+                    class="inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe]"
                     [class]="selectedStatus() === 0 ? 'border-[#fefefe] bg-[#fefefe] text-[#171717]' : 'border-transparent text-[#fefefe]/70 hover:border-[#fefefe]/30 hover:text-[#fefefe]'"
                     [attr.aria-pressed]="selectedStatus() === 0" (click)="selectStatus(0)">
                     In Progress <span class="text-xs tabular-nums opacity-60">{{ inProgress() }}</span>
@@ -27,11 +33,36 @@
             </div>
         </div>
 
-        <button type="button" id="action"
-            class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-3 py-1.5 text-sm border-[#fefefe] bg-[#fefefe] text-[#171717] hover:bg-[#fefefe]/85 self-start sm:self-auto"
-            aria-label="Create project" (click)="openCreateWizard()">
-            <span class="hidden sm:inline">Create</span> <svg lucidePlus class="size-4"></svg>
-        </button>
+        <div class="flex w-full items-center gap-2 sm:w-auto">
+            <span 
+                class="relative flex min-w-0 flex-1 items-center rounded-full
+                        border border-[#fefefe]/25 bg-[#fefefe]/3 px-4 py-2
+                        transition-colors hover:border-[#fefefe]/40
+                        focus-within:border-[#fefefe]
+                        focus-within:ring-1 focus-within:ring-[#fefefe]
+                        sm:w-56 sm:flex-none"
+                >
+                <svg
+                    lucideSearch
+                    class="pointer-events-none absolute left-3 size-4 text-[#fefefe]/40"
+                ></svg>
+
+                <input
+                    type="search"
+                    aria-label="Search projects"
+                    placeholder="Search projects..."
+                    [ngModel]="searchQuery()"
+                    (ngModelChange)="searchQuery.set($event)"
+                    class="w-full min-w-0 bg-transparent pl-5 text-sm text-[#fefefe] placeholder:text-[#fefefe]/40 outline-none"
+                >
+            </span>
+            <button type="button" id="action"
+                class="inline-flex animate-button cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-3 py-1.5 text-sm border-[#fefefe] bg-[#fefefe] text-[#171717] hover:bg-[#fefefe]/85 self-start sm:self-auto"
+                aria-label="Create project" (click)="openCreateWizard()">
+                <span class="hidden sm:inline">Create</span> <svg lucidePlus class="size-4"></svg>
+            </button>
+        </div>
+
     </div>
 </div>
 
@@ -172,7 +203,7 @@
                 </tr>
                 } @empty {
                 <tr>
-                    <td colspan="15" class="px-4 py-16 text-center text-[#fefefe]/50">No projects in this status.</td>
+                    <td colspan="15" class="px-4 py-16 text-center text-[#fefefe]/50">No projects {{ selectedStatus() === null ? 'found' : 'in this status' }}.</td>
                 </tr>
                 }
             }
