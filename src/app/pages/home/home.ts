@@ -84,6 +84,7 @@ export class Home implements OnInit {
     this.isLoading.set(true);
 
     forkJoin({
+      allProjects: this.projectData.getProjectsPageByStatus(1),
       inProgress: this.projectData.getProjectsPageByStatus(1, 0),
       newProjects: this.projectData.getProjectsPageByStatus(1, 1),
       completed: this.projectData.getProjectsPageByStatus(1, 3),
@@ -94,9 +95,11 @@ export class Home implements OnInit {
           1: pages.newProjects.totalCount,
           3: pages.completed.totalCount,
         });
-        const selectedPage = pages.newProjects;
-        this.projectRecords.set(selectedPage.projects);
-        this.hasNextPage.set(selectedPage.hasNextPage);
+        // const selectedPage = pages.newProjects;
+        this.projectRecords.set(pages.allProjects.projects);
+        this.hasNextPage.set(pages.allProjects.hasNextPage);
+
+        this.currentPage.set(1);
         this.isLoading.set(false);
       },
       error: (error) => {
