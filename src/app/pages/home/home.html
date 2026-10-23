@@ -1,32 +1,32 @@
-<div class="selection:bg-[#fefefe] selection:text-[#171717] mx-4 mt-6 sm:mx-6 sm:mt-10 lg:mx-10">
-    <div class="flex flex-col gap-4 border-b border-[#fefefe]/15 pb-5 sm:flex-row sm:items-center sm:justify-between">
+<div class="selection:bg-foreground selection:text-surface mx-4 mt-6 sm:mx-6 sm:mt-10 lg:mx-10">
+    <div class="flex flex-col gap-4 border-b border-foreground/15 pb-5 sm:flex-row sm:items-center sm:justify-between">
         <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-6">
             <h1 class="flex items-center gap-2.5 text-2xl font-semibold tracking-tight">
-                <svg lucideList class="size-5 text-[#fefefe]/60"></svg> List
+                <svg lucideList class="size-5 text-foreground/60"></svg> List
             </h1>
 
             <div role="group" aria-label="Filter by status" class="flex flex-wrap gap-1.5">
                 <button type="button"
-                    class="inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe]"
-                    [class]="selectedStatus() === null ? 'border-[#fefefe] bg-[#fefefe] text-[#171717]' : 'border-transparent text-[#fefefe]/70 hover:border-[#fefefe]/30 hover:text-[#fefefe]'"
+                    class="project-filter"
+                    [class]="selectedStatus() === null ? 'border-foreground bg-foreground text-surface' : 'border-transparent text-foreground/70 hover:border-foreground/30 hover:text-foreground'"
                     [attr.aria-pressed]="selectedStatus() === null" (click)="selectStatus(null)">
                     All Projects <span class="text-xs tabular-nums opacity-60">{{ allProjects() }}</span>
                 </button>
                 <button type="button"
-                    class="inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe]"
-                    [class]="selectedStatus() === 0 ? 'border-[#fefefe] bg-[#fefefe] text-[#171717]' : 'border-transparent text-[#fefefe]/70 hover:border-[#fefefe]/30 hover:text-[#fefefe]'"
+                    class="project-filter"
+                    [class]="selectedStatus() === 0 ? 'border-foreground bg-foreground text-surface' : 'border-transparent text-foreground/70 hover:border-foreground/30 hover:text-foreground'"
                     [attr.aria-pressed]="selectedStatus() === 0" (click)="selectStatus(0)">
                     In Progress <span class="text-xs tabular-nums opacity-60">{{ inProgress() }}</span>
                 </button>
                 <button type="button"
-                    class="inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe]"
-                    [class]="selectedStatus() === 1 ? 'border-[#fefefe] bg-[#fefefe] text-[#171717]' : 'border-transparent text-[#fefefe]/70 hover:border-[#fefefe]/30 hover:text-[#fefefe]'"
+                    class="project-filter"
+                    [class]="selectedStatus() === 1 ? 'border-foreground bg-foreground text-surface' : 'border-transparent text-foreground/70 hover:border-foreground/30 hover:text-foreground'"
                     [attr.aria-pressed]="selectedStatus() === 1" (click)="selectStatus(1)">
                     New Projects <span class="text-xs tabular-nums opacity-60">{{ newProjects() }}</span>
                 </button>
                 <button type="button"
-                    class="inline-flex cursor-pointer items-center gap-2 rounded-full border px-3 py-1 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe]"
-                    [class]="selectedStatus() === 3 ? 'border-[#fefefe] bg-[#fefefe] text-[#171717]' : 'border-transparent text-[#fefefe]/70 hover:border-[#fefefe]/30 hover:text-[#fefefe]'"
+                    class="project-filter"
+                    [class]="selectedStatus() === 3 ? 'border-foreground bg-foreground text-surface' : 'border-transparent text-foreground/70 hover:border-foreground/30 hover:text-foreground'"
                     [attr.aria-pressed]="selectedStatus() === 3" (click)="selectStatus(3)">
                     Completed <span class="text-xs tabular-nums opacity-60">{{ completed() }}</span>
                 </button>
@@ -34,17 +34,17 @@
         </div>
 
         <div class="flex w-full items-center gap-2 sm:w-auto">
-            <span 
+            <span
                 class="relative flex min-w-0 flex-1 items-center rounded-full
-                        border border-[#fefefe]/25 bg-[#fefefe]/3 px-4 py-2
-                        transition-colors hover:border-[#fefefe]/40
-                        focus-within:border-[#fefefe]
-                        focus-within:ring-1 focus-within:ring-[#fefefe]
+                        border border-foreground/25 bg-foreground/3 px-4 py-2
+                        transition-colors hover:border-foreground/40
+                        focus-within:border-foreground
+                        focus-within:ring-1 focus-within:ring-foreground
                         sm:w-56 sm:flex-none"
                 >
                 <svg
                     lucideSearch
-                    class="pointer-events-none absolute left-3 size-4 text-[#fefefe]/40"
+                    class="pointer-events-none absolute left-3 size-4 text-foreground/40"
                 ></svg>
 
                 <input
@@ -53,11 +53,11 @@
                     placeholder="Search projects..."
                     [ngModel]="searchQuery()"
                     (ngModelChange)="searchQuery.set($event)"
-                    class="w-full min-w-0 bg-transparent pl-5 text-sm text-[#fefefe] placeholder:text-[#fefefe]/40 outline-none"
+                    class="w-full min-w-0 bg-transparent pl-5 text-sm text-foreground placeholder:text-foreground/40 outline-none"
                 >
             </span>
             <button type="button" id="action"
-                class="inline-flex animate-button cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-3 py-1.5 text-sm border-[#fefefe] bg-[#fefefe] text-[#171717] hover:bg-[#fefefe]/85 self-start sm:self-auto"
+                class="project-control project-control-primary animate-button px-3 py-1.5 text-sm self-start sm:self-auto"
                 aria-label="Create project" (click)="openCreateWizard()">
                 <span class="hidden sm:inline">Create</span> <svg lucidePlus class="size-4"></svg>
             </button>
@@ -66,115 +66,115 @@
     </div>
 </div>
 
-<div class="selection:bg-[#fefefe] selection:text-[#171717] scrollbar-thin [scrollbar-color:rgb(254_254_254/0.3)_transparent] mx-4 mt-6 max-w-[calc(100vw-2rem)] overflow-x-auto rounded-xl border border-[#fefefe]/15 sm:mx-6 sm:max-w-[calc(100vw-3rem)] lg:mx-10 lg:max-w-[calc(100vw-5rem)]">
-    <table class="min-w-375 w-full border-collapse text-center text-sm [&_th]:border-r [&_th]:border-[#fefefe]/10 [&_td]:border-r [&_td]:border-[#fefefe]/10">
-        <thead class="border-b border-[#fefefe]/15 bg-[#fefefe]/6">
+<div class="selection:bg-foreground selection:text-surface scrollbar-thin [scrollbar-color:rgb(254_254_254/0.3)_transparent] mx-4 mt-6 max-w-[calc(100vw-2rem)] overflow-x-auto rounded-xl border border-foreground/15 sm:mx-6 sm:max-w-[calc(100vw-3rem)] lg:mx-10 lg:max-w-[calc(100vw-5rem)]">
+    <table class="min-w-375 w-full border-collapse text-center text-sm [&_th]:border-r [&_th]:border-foreground/10 [&_td]:border-r [&_td]:border-foreground/10">
+        <thead class="border-b border-foreground/15 bg-foreground/6">
             <tr>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Project Code
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Customer Name
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Project Name
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Start Date
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     End Date
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Revised End
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Renewal
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Issue Date
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Est. Hours
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Actual Hours
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Onshore Manager
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Offshore Manager
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Account Manager
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Status
                 </th>
-                <th scope="col" class="whitespace-nowrap px-4 py-3 text-xs font-medium uppercase tracking-wider text-[#fefefe]/55">
+                <th scope="col" class="project-table-heading">
                     Action
                 </th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-[#fefefe]/10">
+        <tbody class="divide-y divide-foreground/10">
             @if (isLoading()) {
             <tr>
                 <td colspan="15" class="px-4 py-16" role="status">
                     <span class="sr-only">Loading projects</span>
-                    <div class="flex w-full items-center justify-center text-[#fefefe]/60">
+                    <div class="flex w-full items-center justify-center text-foreground/60">
                         <svg lucideLoaderCircle class="size-6 animate-spin"></svg>
                     </div>
                 </td>
             </tr>
             } @else {
                 @for (project of pagedProjects(); track project.projectId) {
-                <tr class="transition-colors hover:bg-[#fefefe]/4">
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums font-mono text-xs"><span title="More Details" class="hover:text-blue-300 hover:underline cursor-pointer transition-colors" (click)="openProjectDetails(project.projectId)">{{ project.projectId }}</span></td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.custName }}</td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums font-medium">{{ project.projectName }}</td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.projectStartDate | date:'dd-MM-yyyy' }}</td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.projectEndDate | date:'dd-MM-yyyy' }}</td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">
-                        @if (project.revisedEndDate) { 
-                            {{ project.revisedEndDate | date:'dd-MM-yyyy' }} 
-                        } @else { 
-                            <span class="text-[#fefefe]/30">-</span> 
+                <tr class="transition-colors hover:bg-foreground/4">
+                    <td class="project-table-cell font-mono text-xs"><span title="More Details" class="hover:text-blue-300 hover:underline cursor-pointer transition-colors" (click)="openProjectDetails(project.projectId)">{{ project.projectId }}</span></td>
+                    <td class="project-table-cell">{{ project.custName }}</td>
+                    <td class="project-table-cell font-medium">{{ project.projectName }}</td>
+                    <td class="project-table-cell">{{ project.projectStartDate | date:'dd-MM-yyyy' }}</td>
+                    <td class="project-table-cell">{{ project.projectEndDate | date:'dd-MM-yyyy' }}</td>
+                    <td class="project-table-cell">
+                        @if (project.revisedEndDate) {
+                            {{ project.revisedEndDate | date:'dd-MM-yyyy' }}
+                        } @else {
+                            <span class="text-foreground/30">-</span>
                         }
                     </td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">
-                        @if (project.renewalDate) { 
-                            {{ project.renewalDate | date:'dd-MM-yyyy' }} 
-                        } @else { 
-                            <span class="text-[#fefefe]/30">-</span> 
+                    <td class="project-table-cell">
+                        @if (project.renewalDate) {
+                            {{ project.renewalDate | date:'dd-MM-yyyy' }}
+                        } @else {
+                            <span class="text-foreground/30">-</span>
                         }
                     </td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.projectIssueDate | date:'dd-MM-yyyy' }}</td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.estimatedHours }}</td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">
-                        @if (project.actualHours != null) { 
-                            {{ project.actualHours }} 
-                        } @else { 
-                            <span class="text-[#fefefe]/30">-</span> 
+                    <td class="project-table-cell">{{ project.projectIssueDate | date:'dd-MM-yyyy' }}</td>
+                    <td class="project-table-cell">{{ project.estimatedHours }}</td>
+                    <td class="project-table-cell">
+                        @if (project.actualHours != null) {
+                            {{ project.actualHours }}
+                        } @else {
+                            <span class="text-foreground/30">-</span>
                         }
                     </td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.onshoreManagerName }}</td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.offshoreManagerName }}</td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">{{ project.accountManagerName }}</td>
-                    <td class="whitespace-nowrap px-4 py-3.5 tabular-nums">
+                    <td class="project-table-cell">{{ project.onshoreManagerName }}</td>
+                    <td class="project-table-cell">{{ project.offshoreManagerName }}</td>
+                    <td class="project-table-cell">{{ project.accountManagerName }}</td>
+                    <td class="project-table-cell">
                         @if (project.status === 1) {
                         <span
-                            class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium border-dashed border-[#fefefe]/30 text-[#fefefe]/70">Pending
+                            class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium border-dashed border-foreground/30 text-foreground/70">Pending
                             approval
                         </span>
                         } @else if (project.status === 0) {
                         <span
-                            class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium border-[#fefefe]/30 bg-[#fefefe]/15">
-                            <span class="size-1.5 rounded-full bg-[#fefefe]"></span>In progress
+                            class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium border-foreground/30 bg-foreground/15">
+                            <span class="size-1.5 rounded-full bg-foreground"></span>In progress
                         </span>
                         } @else {
-                        <span class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium border-transparent text-[#fefefe]/50">
-                            <span class="size-1.5 rounded-full border border-[#fefefe]/60"></span>Completed
+                        <span class="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium border-transparent text-foreground/50">
+                            <span class="size-1.5 rounded-full border border-foreground/60"></span>Completed
                         </span>
                         }
                     </td>
@@ -182,19 +182,19 @@
                         <div class="flex items-center justify-center gap-1.5">
                             @if (project.status === 1) {
                             <button type="button" title="Start progress" aria-label="Start progress"
-                                class="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-[#fefefe]/30 transition-colors hover:bg-[#fefefe] hover:text-[#171717] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe]"
+                                class="project-icon-button"
                                 (click)="changeProjectStatus(project.projectId, 0)">
                                 <svg lucidePlay class="size-4"></svg>
                             </button>
                             } @else if (project.status === 0) {
                             <button type="button" title="Mark completed" aria-label="Mark completed"
-                                class="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-[#fefefe]/30 transition-colors hover:bg-[#fefefe] hover:text-[#171717] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe]"
+                                class="project-icon-button"
                                 (click)="changeProjectStatus(project.projectId, 3)">
                                 <svg lucideCheck class="size-4"></svg>
                             </button>
                             }
                             <button type="button" title="Edit project details" aria-label="Edit project details"
-                                class="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-transparent text-[#fefefe]/70 transition-colors hover:border-[#fefefe]/30 hover:bg-[#fefefe] hover:text-[#171717] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe]"
+                                class="inline-flex size-8 cursor-pointer items-center justify-center rounded-lg border border-transparent text-foreground/70 transition-colors hover:border-foreground/30 hover:bg-foreground hover:text-surface focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
                                 (click)="editProject(project)">
                                 <svg lucidePencil class="size-4"></svg>
                             </button>
@@ -203,7 +203,7 @@
                 </tr>
                 } @empty {
                 <tr>
-                    <td colspan="15" class="px-4 py-16 text-center text-[#fefefe]/50">No projects {{ selectedStatus() === null ? 'found' : 'in this status' }}.</td>
+                    <td colspan="15" class="px-4 py-16 text-center text-foreground/50">No projects {{ selectedStatus() === null ? 'found' : 'in this status' }}.</td>
                 </tr>
                 }
             }
@@ -213,19 +213,19 @@
 
 <nav aria-label="Project list pages" class="mx-4 my-6 flex items-center justify-center gap-4 sm:mx-6 lg:mx-10">
     <button type="button"
-        class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-2 py-1 text-xs border-[#fefefe]/30 hover:bg-[#fefefe] hover:text-[#171717] disabled:hover:bg-transparent disabled:hover:text-inherit"
+        class="project-control project-control-muted px-2 py-1 text-xs"
         aria-label="Previous page" (click)="previousPage()" [disabled]="displayedPage() === 1"
     >
         <svg lucideChevronLeft class="size-4"></svg>
     </button>
 
-    <span aria-live="polite" class="text-sm tabular-nums text-[#fefefe]/70">
+    <span aria-live="polite" class="text-sm tabular-nums text-foreground/70">
         Page {{ displayedPage() }} of {{ totalPages() }}
     </span>
 
-    <button 
+    <button
         type="button"
-        class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-2 py-1 text-xs border-[#fefefe]/30 hover:bg-[#fefefe] hover:text-[#171717] disabled:hover:bg-transparent disabled:hover:text-inherit"
+        class="project-control project-control-muted px-2 py-1 text-xs"
         aria-label="Next page" (click)="nextPage()" [disabled]="displayedPage() === totalPages()"
     >
         <svg lucideChevronRight class="size-4"></svg>
@@ -234,15 +234,15 @@
 
 @if (isCreateModalOpen()) {
 <div (click)="isCreateModalOpen.set(false)"
-    class="fixed inset-0 z-999 flex items-center justify-center bg-[#171717]/70 p-4 backdrop-blur-sm">
+    class="fixed inset-0 z-999 flex items-center justify-center bg-surface/70 p-4 backdrop-blur-sm">
     <div role="dialog" aria-modal="true" aria-labelledby="project-dialog-title"
-        class="scrollbar-thin [scrollbar-color:rgb(254_254_254/0.3)_transparent] max-h-[90vh] w-full max-w-2xl overflow-y-auto selection:bg-[#fefefe] selection:text-[#171717] rounded-2xl border border-[#fefefe]/15 bg-[#171717] p-5 text-[#fefefe] shadow-2xl shadow-black/60 sm:p-7"
+        class="scrollbar-thin [scrollbar-color:rgb(254_254_254/0.3)_transparent] max-h-[90vh] w-full max-w-2xl overflow-y-auto selection:bg-foreground selection:text-surface rounded-2xl border border-foreground/15 bg-surface p-5 text-foreground shadow-2xl shadow-black/60 sm:p-7"
         (click)="$event.stopPropagation()">
         <div class="flex items-center justify-between">
             <h2 id="project-dialog-title" class="text-xl font-semibold tracking-tight">
                 {{ editingProjectId() ? 'Edit Project' : 'Create Project' }}</h2>
             <button type="button"
-                class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-lg border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 p-1.5 text-sm border-transparent text-[#fefefe]/70 hover:bg-[#fefefe] hover:text-[#171717] disabled:hover:bg-transparent disabled:hover:text-inherit"
+                class="project-control project-control-quiet"
                 aria-label="Close modal" (click)="isCreateModalOpen.set(false)">
                 <svg lucideX class="size-5"></svg>
             </button>
@@ -251,161 +251,161 @@
         <form #projectForm="ngForm" (ngSubmit)="saveProject(projectForm)"
             class="mt-6 grid gap-x-4 gap-y-5 md:grid-cols-2" novalidate autocomplete="off">
             <label class="flex flex-col gap-1.5">
-                <span class="text-xs font-medium text-[#fefefe]/75">Customer name <span
+                <span class="text-xs font-medium text-foreground/75">Customer name <span
                         aria-hidden="true">*</span></span>
                 <input required type="text" name="customerName" [(ngModel)]="draftProject.custName"
-                    class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
+                    class="project-input"
                     [attr.aria-invalid]="projectForm.controls['customerName']?.touched && !draftProject.custName.trim()" />
                 @if (projectForm.controls['customerName']?.touched && !draftProject.custName.trim()) {
-                <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Customer name is
+                <span class="text-xs text-foreground/75 underline decoration-dotted underline-offset-2">Customer name is
                     required.</span>
                 }
             </label>
 
             <label class="flex flex-col gap-1.5">
-                <span class="text-xs font-medium text-[#fefefe]/75">Project name <span
+                <span class="text-xs font-medium text-foreground/75">Project name <span
                         aria-hidden="true">*</span></span>
                 <input required type="text" name="projectName" [(ngModel)]="draftProject.projectName"
-                    class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
+                    class="project-input"
                     [attr.aria-invalid]="projectForm.controls['projectName']?.touched && !draftProject.projectName.trim()" />
                 @if (projectForm.controls['projectName']?.touched && !draftProject.projectName.trim()) {
-                <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Project name is
+                <span class="text-xs text-foreground/75 underline decoration-dotted underline-offset-2">Project name is
                     required.</span>
                 }
             </label>
 
             <fieldset class="grid gap-x-4 gap-y-5 md:col-span-2 md:grid-cols-2">
-                <legend class="mb-3 border-t border-[#fefefe]/10 pt-5 text-sm font-semibold md:col-span-2 md:w-full">
+                <legend class="mb-3 border-t border-foreground/10 pt-5 text-sm font-semibold md:col-span-2 md:w-full">
                     Schedule</legend>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">Project start date <span
+                    <span class="text-xs font-medium text-foreground/75">Project start date <span
                             aria-hidden="true">*</span></span>
                     <input required type="date" name="projectStartDate" [(ngModel)]="draftProject.projectStartDate"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
+                        class="project-input"
                         [attr.aria-invalid]="projectForm.controls['projectStartDate']?.touched && !draftProject.projectStartDate" />
                     @if (projectForm.controls['projectStartDate']?.touched && !draftProject.projectStartDate) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">
+                    <span class="text-xs text-foreground/75 underline decoration-dotted underline-offset-2">
                         Project start date is required.
                     </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">
+                    <span class="text-xs font-medium text-foreground/75">
                         End date <span aria-hidden="true">*</span>
                     </span>
                     <input required type="date" name="endDate" [(ngModel)]="draftProject.projectEndDate"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
+                        class="project-input"
                         [attr.aria-invalid]="projectForm.controls['endDate']?.touched && !draftProject.projectEndDate" />
                     @if (projectForm.controls['endDate']?.touched && !draftProject.projectEndDate) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">
+                    <span class="text-xs text-foreground/75 underline decoration-dotted underline-offset-2">
                         End date is required.
                     </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">
+                    <span class="text-xs font-medium text-foreground/75">
                         Issue date <span aria-hidden="true">*</span>
                     </span>
                     <input required type="date" name="issueDate" [(ngModel)]="draftProject.projectIssueDate"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
+                        class="project-input"
                         [attr.aria-invalid]="projectForm.controls['issueDate']?.touched && !draftProject.projectIssueDate" />
                     @if (projectForm.controls['issueDate']?.touched && !draftProject.projectIssueDate) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">
+                    <span class="text-xs text-foreground/75 underline decoration-dotted underline-offset-2">
                         Issue date is required.
                     </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">
-                        Revised end date <span class="font-normal text-[#fefefe]/40">(optional)</span>
+                    <span class="text-xs font-medium text-foreground/75">
+                        Revised end date <span class="font-normal text-foreground/40">(optional)</span>
                     </span>
                     <input type="date" name="revisedEndDate" [(ngModel)]="draftProject.revisedEndDate"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark" />
+                        class="project-input" />
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">
-                        Renewal date <span class="font-normal text-[#fefefe]/40">(optional)</span>
+                    <span class="text-xs font-medium text-foreground/75">
+                        Renewal date <span class="font-normal text-foreground/40">(optional)</span>
                     </span>
                     <input type="date" name="renewalDate" [(ngModel)]="draftProject.renewalDate"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark" />
+                        class="project-input" />
                 </label>
             </fieldset>
 
             <fieldset class="grid gap-x-4 gap-y-5 md:col-span-2 md:grid-cols-2">
-                <legend class="mb-3 border-t border-[#fefefe]/10 pt-5 text-sm font-semibold md:col-span-2 md:w-full">
+                <legend class="mb-3 border-t border-foreground/10 pt-5 text-sm font-semibold md:col-span-2 md:w-full">
                     Effort</legend>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">
+                    <span class="text-xs font-medium text-foreground/75">
                         Estimated hours <span aria-hidden="true">*</span>
                     </span>
                     <input required type="number" name="estimatedHours" [(ngModel)]="draftProject.estimatedHours"
                         min="0"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark tabular-nums"
+                        class="project-input tabular-nums"
                         [attr.aria-invalid]="projectForm.controls['estimatedHours']?.touched && projectForm.controls['estimatedHours']?.invalid" />
                     @if (projectForm.controls['estimatedHours']?.touched && projectForm.controls['estimatedHours']?.invalid) {
-                        <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">
+                        <span class="text-xs text-foreground/75 underline decoration-dotted underline-offset-2">
                             Estimated hours is required.
                         </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">
-                        Actual hours <span class="font-normal text-[#fefefe]/40">(optional)</span>
+                    <span class="text-xs font-medium text-foreground/75">
+                        Actual hours <span class="font-normal text-foreground/40">(optional)</span>
                     </span>
                     <input type="number" name="actualHours" [(ngModel)]="draftProject.actualHours" min="0"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark tabular-nums" />
+                        class="project-input tabular-nums" />
                 </label>
             </fieldset>
 
             <fieldset class="grid gap-x-4 gap-y-5 md:col-span-2 md:grid-cols-2">
-                <legend class="mb-3 border-t border-[#fefefe]/10 pt-5 text-sm font-semibold md:col-span-2 md:w-full">
+                <legend class="mb-3 border-t border-foreground/10 pt-5 text-sm font-semibold md:col-span-2 md:w-full">
                     People
                 </legend>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">
+                    <span class="text-xs font-medium text-foreground/75">
                         Onshore manager <span aria-hidden="true">*</span>
                     </span>
                     <input required type="text" name="onshoreManager" [(ngModel)]="draftProject.onshoreManagerName"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
+                        class="project-input"
                         [attr.aria-invalid]="projectForm.controls['onshoreManager']?.touched && !draftProject.onshoreManagerName.trim()" />
                     @if (projectForm.controls['onshoreManager']?.touched && !draftProject.onshoreManagerName.trim()) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Onshore
+                    <span class="text-xs text-foreground/75 underline decoration-dotted underline-offset-2">Onshore
                         manager is required.
                     </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">
+                    <span class="text-xs font-medium text-foreground/75">
                         Offshore manager <span aria-hidden="true">*</span>
                     </span>
                     <input required type="text" name="offshoreManager" [(ngModel)]="draftProject.offshoreManagerName"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
+                        class="project-input"
                         [attr.aria-invalid]="projectForm.controls['offshoreManager']?.touched && !draftProject.offshoreManagerName.trim()" />
                     @if (projectForm.controls['offshoreManager']?.touched && !draftProject.offshoreManagerName.trim()) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Offshore
+                    <span class="text-xs text-foreground/75 underline decoration-dotted underline-offset-2">Offshore
                         manager is required.
                     </span>
                     }
                 </label>
 
                 <label class="flex flex-col gap-1.5">
-                    <span class="text-xs font-medium text-[#fefefe]/75">
+                    <span class="text-xs font-medium text-foreground/75">
                         Account manager <span aria-hidden="true">*</span>
                     </span>
                     <input required type="text" name="accountManager" [(ngModel)]="draftProject.accountManagerName"
-                        class="w-full rounded-lg border border-[#fefefe]/25 bg-[#fefefe]/3 px-3 py-2 text-sm transition-colors hover:border-[#fefefe]/40 focus:border-[#fefefe] focus:outline-none focus:ring-1 focus:ring-[#fefefe] aria-invalid:border-dashed aria-invalid:border-[#fefefe] scheme-dark"
+                        class="project-input"
                         [attr.aria-invalid]="projectForm.controls['accountManager']?.touched && !draftProject.accountManagerName.trim()" />
                     @if (projectForm.controls['accountManager']?.touched && !draftProject.accountManagerName.trim()) {
-                    <span class="text-xs text-[#fefefe]/75 underline decoration-dotted underline-offset-2">Account
+                    <span class="text-xs text-foreground/75 underline decoration-dotted underline-offset-2">Account
                         manager is required.
                     </span>
                     }
@@ -413,14 +413,14 @@
             </fieldset>
 
             <div
-                class="mt-2 flex flex-col-reverse gap-3 border-t border-[#fefefe]/10 pt-5 sm:flex-row sm:justify-end md:col-span-2">
+                class="mt-2 flex flex-col-reverse gap-3 border-t border-foreground/10 pt-5 sm:flex-row sm:justify-end md:col-span-2">
                 <button type="button"
-                    class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-5 py-2 text-sm border-[#fefefe]/30 hover:bg-[#fefefe] hover:text-[#171717] disabled:hover:bg-transparent disabled:hover:text-inherit"
+                    class="project-control project-control-muted px-5 py-2 text-sm"
                     (click)="isCreateModalOpen.set(false)">
                     Cancel
                 </button>
                 <button type="submit" [disabled]="isSaving()"
-                    class="inline-flex cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-full border font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#fefefe] disabled:cursor-not-allowed disabled:opacity-40 px-5 py-2 text-sm border-[#fefefe] bg-[#fefefe] text-[#171717] hover:bg-[#fefefe]/85"
+                    class="project-control project-control-primary px-5 py-2 text-sm"
                 >
                     @if (isSaving()) {
                     Saving...
