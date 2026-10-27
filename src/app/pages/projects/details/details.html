@@ -5,7 +5,14 @@
         <svg lucideLoaderCircle class="animate-spin"></svg>
       </span>
     } @else if (projectState().error) {
-      <p class="text-sm text-validation">Could not load this project.</p>
+      <div class="flex flex-col items-start gap-3">
+        <p class="text-sm text-validation">Could not load this project.</p>
+        <button type="button"
+          class="project-control project-control-primary px-4 py-2 text-sm"
+          (click)="retryLoad()">
+          Try again
+        </button>
+      </div>
     } @else if (projectState().project; as project) {
       <div class="grid grid-cols-1 gap-3 text-foreground md:grid-cols-6 lg:grid-cols-12 lg:gap-4">
 

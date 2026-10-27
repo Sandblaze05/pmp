@@ -1,7 +1,7 @@
-import { Component, inject, input, effect } from '@angular/core';
+import { Component, inject, input, effect, signal } from '@angular/core';
 import { ProjectData } from '../../../project-data';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { switchMap, map, startWith, catchError, of } from 'rxjs';
+import { switchMap, map, startWith, catchError, of, combineLatestWith } from 'rxjs';
 import { 
   LucideFolder, 
   LucideUserRound, 
@@ -46,10 +46,12 @@ export class Details {
   private readonly projectService = inject(ProjectData);
   
   readonly id = input.required<string>();
+  private readonly retryAttempt = signal(0);
 
   readonly projectState = toSignal(
     toObservable(this.id).pipe(
-      switchMap(currentId => this.projectService.getProject(currentId).pipe(
+      combineLatestWith(toObservable(this.retryAttempt)),
+      switchMap(([currentId]) => this.projectService.getProject(currentId).pipe(
         map((project) => ({
           project,
           loading: false,
@@ -69,4 +71,8 @@ export class Details {
     ),
     { initialValue: { project: null, loading: true, error: false } }
   );
+
+  retryLoad(): void {
+    this.retryAttempt.update((attempt) => attempt + 1);
+  }
 }

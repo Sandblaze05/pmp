@@ -28,7 +28,6 @@
     transition: all;
     transition-duration: 200ms;
     transition-timing-function: var(--ease-out);
-    will-change: transform;
     &:active {
         scale: 0.95;
         transform: translateY(calc(var(--spacing) * 0.5));

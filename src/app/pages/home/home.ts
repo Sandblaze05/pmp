@@ -75,13 +75,30 @@ export class Home implements OnInit {
   editingProjectId = signal<string | null>(null);
 
   isLoading = signal(true);
+  hasLoadError = signal(false);
+  private initialLoadFailed = false;
   isSaving = signal(false);
   isUpdatingStatus = signal(false);
 
   searchQuery = signal('');
 
   ngOnInit(): void {
+    this.loadInitialProjects();
+  }
+
+  retryLoad(): void {
+    if (this.initialLoadFailed) {
+      this.loadInitialProjects();
+      return;
+    }
+
+    this.loadStatusPage(this.selectedStatus(), this.currentPage(), true);
+  }
+
+  private loadInitialProjects(): void {
     this.isLoading.set(true);
+    this.hasLoadError.set(false);
+    this.initialLoadFailed = true;
 
     forkJoin({
       allProjects: this.projectData.getProjectsPageByStatus(1),
@@ -101,10 +118,13 @@ export class Home implements OnInit {
 
         this.currentPage.set(1);
         this.isLoading.set(false);
+        this.hasLoadError.set(false);
+        this.initialLoadFailed = false;
       },
       error: (error) => {
         this.toast.error(`Failed to load projects: ${this.getErrorMessage(error)}`);
         this.isLoading.set(false);
+        this.hasLoadError.set(true);
         console.error("Failed to load projects: ", error);
       },
     });
@@ -154,6 +174,7 @@ export class Home implements OnInit {
     if (showLoading) {
       this.isLoading.set(true);
     }
+    this.hasLoadError.set(false);
 
     this.projectData.getProjectsPageByStatus(page, status ?? undefined).subscribe({
       next: (result) => {
@@ -165,10 +186,12 @@ export class Home implements OnInit {
           this.statusCounts.update((counts) => ({ ...counts, [status]: result.totalCount }));
         }
         this.isLoading.set(false);
+        this.hasLoadError.set(false);
       },
       error: (error) => {
         this.toast.error(`Failed to load projects: ${this.getErrorMessage(error)}`);
         this.isLoading.set(false);
+        this.hasLoadError.set(true);
         console.error("Failed to load projects: ", error);
       }
     });
